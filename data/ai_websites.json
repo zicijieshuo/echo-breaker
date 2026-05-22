@@ -2,57 +2,57 @@
   {
     "domain": "deepseek.com",
     "name": "DeepSeek",
-    "inputSelector": "textarea",
-    "sendButtonSelector": "button[type='submit']",
-    "responseSelector": ".markdown-body"
+    "inputSelector": "textarea, [contenteditable='true']",
+    "sendButtonSelector": "[aria-label='Send'], button[class*='send'], div[class*='send']",
+    "responseSelector": ".markdown-body, .ds-markdown"
   },
   {
     "domain": "kimi.moonshot.cn",
     "name": "Kimi",
-    "inputSelector": "textarea",
-    "sendButtonSelector": ".send-button",
-    "responseSelector": ".message-content"
+    "inputSelector": "textarea, [contenteditable='true']",
+    "sendButtonSelector": "[aria-label='Send'], button[class*='send'], .send-button",
+    "responseSelector": ".message-content, .markdown-body"
   },
   {
     "domain": "chatgpt.com",
     "name": "ChatGPT",
-    "inputSelector": "#prompt-textarea",
-    "sendButtonSelector": "[data-testid='send-button']",
-    "responseSelector": ".markdown"
+    "inputSelector": "#prompt-textarea, div.ProseMirror[contenteditable='true']",
+    "sendButtonSelector": "[data-testid='send-button'], button[aria-label='Send message'], button[aria-label='Send prompt']",
+    "responseSelector": ".markdown, [data-message-author-role='assistant']"
   },
   {
     "domain": "chat.openai.com",
     "name": "ChatGPT (Legacy)",
-    "inputSelector": "#prompt-textarea",
-    "sendButtonSelector": "[data-testid='send-button']",
-    "responseSelector": ".markdown"
+    "inputSelector": "#prompt-textarea, div.ProseMirror[contenteditable='true']",
+    "sendButtonSelector": "[data-testid='send-button'], button[aria-label='Send message']",
+    "responseSelector": ".markdown, [data-message-author-role='assistant']"
   },
   {
     "domain": "yiyan.baidu.com",
     "name": "文心一言",
-    "inputSelector": "textarea",
-    "sendButtonSelector": ".send-btn",
-    "responseSelector": ".response-content"
+    "inputSelector": "textarea, [contenteditable='true']",
+    "sendButtonSelector": "[aria-label='发送'], button[class*='send'], .send-btn",
+    "responseSelector": ".response-content, .markdown-body"
   },
   {
     "domain": "tongyi.aliyun.com",
     "name": "通义千问",
-    "inputSelector": "textarea",
-    "sendButtonSelector": ".send-button",
-    "responseSelector": ".markdown-body"
+    "inputSelector": "textarea, [contenteditable='true']",
+    "sendButtonSelector": "[aria-label='发送'], button[class*='send'], .send-button",
+    "responseSelector": ".markdown-body, .message-content"
   },
   {
     "domain": "doubao.com",
     "name": "豆包",
-    "inputSelector": "textarea",
-    "sendButtonSelector": ".send-btn",
-    "responseSelector": ".message-content"
+    "inputSelector": "textarea, [contenteditable='true']",
+    "sendButtonSelector": "[aria-label='发送'], button[class*='send'], .send-btn",
+    "responseSelector": ".message-content, .markdown-body"
   },
   {
     "domain": "claude.ai",
     "name": "Claude",
-    "inputSelector": "div[contenteditable='true']",
-    "sendButtonSelector": "button[aria-label='Send message']",
-    "responseSelector": ".markdown"
+    "inputSelector": "div.ProseMirror[contenteditable='true'], div[contenteditable='true']",
+    "sendButtonSelector": "button[aria-label='Send message'], button[aria-label='Send'], fieldset button:last-of-type",
+    "responseSelector": ".markdown, [data-is-streaming]"
   }
 ]

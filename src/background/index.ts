@@ -248,8 +248,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false;
 });
 
-/** 处理用户活跃消息 */
+/** 处理用户活跃消息：同时累加总时长和活跃时长 */
 async function handleUserActive(): Promise<void> {
+  await addDuration(60);
   await addActiveDuration(60);
 }
 
