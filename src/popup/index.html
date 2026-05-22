@@ -5,65 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>回声破除者</title>
   <link rel="stylesheet" href="popup.css">
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 </head>
-<body class="w-[420px] min-h-[560px] bg-echo-dark text-white p-5">
+<body style="width: 420px; min-height: 560px; background-color: #1e1b4b; color: white; padding: 20px; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;">
   <!-- 头部：标题 + 当前状态 -->
-  <header class="flex items-center justify-between mb-4">
+  <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
     <div>
-      <h1 class="text-xl font-bold text-echo-glow">🧠 回声破除者</h1>
-      <p class="text-xs text-gray-400 mt-1">认知抗阻伴学插件</p>
+      <h1 style="font-size: 20px; font-weight: bold; color: #818cf8; margin: 0;">🧠 回声破除者</h1>
+      <p style="font-size: 12px; color: #9ca3af; margin-top: 2px;">认知抗阻伴学插件</p>
     </div>
-    <div id="status-indicator" class="flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1">
-      <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500"></span>
-      <span id="status-text" class="text-xs text-gray-400">未监测</span>
+    <div id="status-indicator" style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border-radius: 9999px; padding: 4px 12px;">
+      <span id="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #6b7280;"></span>
+      <span id="status-text" style="font-size: 12px; color: #9ca3af;">未监测</span>
     </div>
   </header>
 
   <!-- 今日概览 -->
-  <section class="mb-4">
-    <h2 class="text-sm font-semibold text-echo-warm mb-2">今日概览</h2>
-    <div class="grid grid-cols-3 gap-2">
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div id="today-duration" class="text-lg font-bold text-echo-glow">00:00</div>
-        <div class="text-xs text-gray-400">使用时长</div>
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #f59e0b; margin-bottom: 8px;">今日概览</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; text-align: center;">
+        <div id="today-duration" style="font-size: 18px; font-weight: bold; color: #818cf8;">00:00</div>
+        <div style="font-size: 12px; color: #9ca3af;">使用时长</div>
       </div>
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div id="today-rounds" class="text-lg font-bold text-echo-warm">0</div>
-        <div class="text-xs text-gray-400">连续提问</div>
+      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; text-align: center;">
+        <div id="today-rounds" style="font-size: 18px; font-weight: bold; color: #f59e0b;">0</div>
+        <div style="font-size: 12px; color: #9ca3af;">连续提问</div>
       </div>
-      <div class="bg-white/5 rounded-xl p-3 text-center">
-        <div id="today-copies" class="text-lg font-bold text-pink-400">0</div>
-        <div class="text-xs text-gray-400">复制次数</div>
+      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; text-align: center;">
+        <div id="today-copies" style="font-size: 18px; font-weight: bold; color: #f472b6;">0</div>
+        <div style="font-size: 12px; color: #9ca3af;">复制次数</div>
       </div>
     </div>
   </section>
 
   <!-- 本周趋势图 -->
-  <section class="mb-4">
-    <h2 class="text-sm font-semibold text-echo-warm mb-2">本周趋势</h2>
-    <div id="weekly-chart" class="bg-white/5 rounded-xl p-2" style="height: 180px;"></div>
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #f59e0b; margin-bottom: 8px;">本周趋势</h2>
+    <div id="weekly-chart" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 8px; height: 180px;"></div>
   </section>
 
   <!-- 提问 vs 复制比例图 -->
-  <section class="mb-4">
-    <h2 class="text-sm font-semibold text-echo-warm mb-2">提问 vs 复制</h2>
-    <div id="ratio-chart" class="bg-white/5 rounded-xl p-2" style="height: 150px;"></div>
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #f59e0b; margin-bottom: 8px;">提问 vs 复制</h2>
+    <div id="ratio-chart" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 8px; height: 150px;"></div>
   </section>
 
   <!-- 高频使用时段 -->
-  <section class="mb-4">
-    <h2 class="text-sm font-semibold text-echo-warm mb-2">高频使用时段</h2>
-    <div id="hourly-chart" class="bg-white/5 rounded-xl p-2" style="height: 150px;"></div>
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #f59e0b; margin-bottom: 8px;">高频使用时段</h2>
+    <div id="hourly-chart" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 8px; height: 150px;"></div>
   </section>
 
   <!-- 底部操作栏 -->
-  <footer class="flex items-center justify-between text-xs text-gray-500 mt-2">
-    <span id="version-text">v0.0.0</span>
-    <div class="flex items-center gap-3">
-      <button id="export-btn" class="text-echo-glow hover:underline">导出日志</button>
-      <button id="clear-btn" class="text-red-400/70 hover:text-red-400 transition-colors">清除数据</button>
-      <button id="settings-btn" class="text-echo-glow hover:underline">设置</button>
+  <footer style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #6b7280; margin-top: 8px;">
+    <span id="version-text">v0.3.1</span>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button id="export-btn" style="color: #818cf8; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">导出日志</button>
+      <button id="clear-btn" style="color: rgba(244,114,182,0.7); text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;" onmouseover="this.style.color='#f472b6'" onmouseout="this.style.color='rgba(244,114,182,0.7)'">清除数据</button>
+      <button id="settings-btn" style="color: #818cf8; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">设置</button>
     </div>
   </footer>
 

@@ -1,14 +1,16 @@
 // 回声破除者 - Popup 数据看板脚本
 
+import * as echarts from 'echarts';
+
 /** ECharts 实例缓存 */
-let weeklyChartInstance: any = null;
-let ratioChartInstance: any = null;
-let hourlyChartInstance: any = null;
+let weeklyChartInstance: echarts.ECharts | null = null;
+let ratioChartInstance: echarts.ECharts | null = null;
+let hourlyChartInstance: echarts.ECharts | null = null;
 
 /** 自动刷新定时器 */
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
-/** 格式化秒数为 HH:MM */
+/** 格式化秒数为可读格式 */
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -35,66 +37,39 @@ function formatDateLabel(dateStr: string): string {
   return `${parts[1]}/${parts[2]}`;
 }
 
-/** 等待 ECharts 全局对象可用 */
-function waitForECharts(): Promise<void> {
-  return new Promise((resolve) => {
-    if ((window as any).echarts) {
-      resolve();
-      return;
-    }
-    const check = setInterval(() => {
-      if ((window as any).echarts) {
-        clearInterval(check);
-        resolve();
-      }
-    }, 50);
-    setTimeout(() => {
-      clearInterval(check);
-      resolve();
-    }, 5000);
-  });
-}
-
 /** 初始化本周趋势柱状图 */
 function initWeeklyChart(dates: string[], minutes: number[]): void {
   const container = document.getElementById('weekly-chart');
   if (!container) return;
 
-  const echarts = (window as any).echarts;
-  if (!echarts) return;
-
   if (!weeklyChartInstance) {
     weeklyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
   }
 
-  const option = {
+  const option: echarts.EChartsOption = {
     grid: { top: 15, right: 12, bottom: 24, left: 36 },
     xAxis: {
-      type: 'category' as const,
+      type: 'category',
       data: dates.map(formatDateLabel),
       axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
       axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 },
       axisTick: { show: false },
     },
     yAxis: {
-      type: 'value' as const,
+      type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
       axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 10, formatter: '{value}m' },
     },
     tooltip: {
-      trigger: 'axis' as const,
+      trigger: 'axis',
       backgroundColor: 'rgba(30,27,75,0.9)',
       borderColor: 'rgba(99,102,241,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
-      formatter: (params: any) => {
-        const p = params[0];
-        return `${p.name}<br/>使用时长：<b>${p.value}分钟</b>`;
-      },
     },
     series: [{
-      type: 'bar' as const,
+      type: 'bar',
       data: minutes,
       barWidth: '50%',
       itemStyle: {
@@ -103,14 +78,6 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
           { offset: 0, color: '#818cf8' },
           { offset: 1, color: '#6366f1' },
         ]),
-      },
-      emphasis: {
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#a5b4fc' },
-            { offset: 1, color: '#818cf8' },
-          ]),
-        },
       },
     }],
     animation: true,
@@ -124,9 +91,6 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
 function initRatioChart(questions: number, copies: number): void {
   const container = document.getElementById('ratio-chart');
   if (!container) return;
-
-  const echarts = (window as any).echarts;
-  if (!echarts) return;
 
   if (!ratioChartInstance) {
     ratioChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
@@ -142,9 +106,9 @@ function initRatioChart(questions: number, copies: number): void {
         { value: 1, name: '暂无数据', itemStyle: { color: 'rgba(255,255,255,0.08)' } },
       ];
 
-  const option = {
+  const option: echarts.EChartsOption = {
     tooltip: hasData ? {
-      trigger: 'item' as const,
+      trigger: 'item',
       backgroundColor: 'rgba(30,27,75,0.9)',
       borderColor: 'rgba(99,102,241,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
@@ -157,13 +121,13 @@ function initRatioChart(questions: number, copies: number): void {
       itemGap: 16,
     } : undefined,
     series: [{
-      type: 'pie' as const,
+      type: 'pie',
       radius: ['40%', '68%'],
       center: ['50%', '45%'],
       avoidLabelOverlap: false,
       label: {
         show: !hasData,
-        position: 'center' as const,
+        position: 'center',
         formatter: '暂无数据',
         color: 'rgba(255,255,255,0.3)',
         fontSize: 12,
@@ -186,9 +150,6 @@ function initHourlyChart(hourlyData: number[]): void {
   const container = document.getElementById('hourly-chart');
   if (!container) return;
 
-  const echarts = (window as any).echarts;
-  if (!echarts) return;
-
   if (!hourlyChartInstance) {
     hourlyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
   }
@@ -205,34 +166,30 @@ function initHourlyChart(hourlyData: number[]): void {
 
   const maxVal = Math.max(...periodData, 1);
 
-  const option = {
+  const option: echarts.EChartsOption = {
     grid: { top: 8, right: 36, bottom: 8, left: 52 },
     xAxis: {
-      type: 'value' as const,
+      type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
       axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 9, formatter: '{value}m' },
     },
     yAxis: {
-      type: 'category' as const,
+      type: 'category',
       data: periodLabels,
       axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
       axisTick: { show: false },
       axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 },
     },
     tooltip: {
-      trigger: 'axis' as const,
+      trigger: 'axis',
       backgroundColor: 'rgba(30,27,75,0.9)',
       borderColor: 'rgba(99,102,241,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
-      formatter: (params: any) => {
-        const p = params[0];
-        return `${p.name}<br/>使用时长：<b>${p.value}分钟</b>`;
-      },
     },
     series: [{
-      type: 'bar' as const,
+      type: 'bar',
       data: periodData.map((val) => ({
         value: val,
         itemStyle: {
@@ -259,24 +216,21 @@ async function updateStatusIndicator(): Promise<void> {
   if (!dot || !text) return;
 
   try {
-    // 通过 background 查询当前标签页是否为 AI 网站
     const result: any = await chrome.runtime.sendMessage({ type: 'CHECK_CURRENT_SITE' });
     if (result?.isAI) {
-      dot.className = 'w-2 h-2 rounded-full bg-green-400';
+      dot.style.background = '#4ade80';
       dot.style.animation = 'pulse 2s infinite';
       text.textContent = `正在监测 · ${result.siteName || ''}`;
-      text.className = 'text-xs text-green-400';
+      text.style.color = '#4ade80';
     } else {
-      dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+      dot.style.background = '#6b7280';
       dot.style.animation = '';
       text.textContent = '未监测';
-      text.className = 'text-xs text-gray-400';
+      text.style.color = '#9ca3af';
     }
   } catch {
-    dot.className = 'w-2 h-2 rounded-full bg-gray-500';
-    dot.style.animation = '';
+    dot.style.background = '#6b7280';
     text.textContent = '未监测';
-    text.className = 'text-xs text-gray-400';
   }
 }
 
@@ -326,7 +280,7 @@ function setVersion(): void {
     const manifest = chrome.runtime.getManifest();
     el.textContent = `v${manifest.version}`;
   } catch {
-    el.textContent = 'v0.1.0';
+    el.textContent = 'v0.3.1';
   }
 }
 
@@ -341,10 +295,9 @@ async function clearTodayData(): Promise<void> {
   }
 }
 
-/** 导出完整日志（所有存储数据 + 扩展信息） */
+/** 导出完整日志 */
 async function exportLogs(): Promise<void> {
   try {
-    // 收集所有数据
     const allData = await chrome.storage.local.get(null);
     const manifest = chrome.runtime.getManifest();
 
@@ -359,7 +312,6 @@ async function exportLogs(): Promise<void> {
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
 
-    // 创建下载链接
     const a = document.createElement('a');
     a.href = url;
     a.download = `echo-breaker-log-${new Date().toISOString().split('T')[0]}.json`;
@@ -376,10 +328,10 @@ async function exportLogs(): Promise<void> {
 /** 打开侧边栏面板 */
 async function openSidePanel(): Promise<void> {
   try {
-    if (chrome.sidePanel?.open) {
+    if ((chrome as any).sidePanel?.open) {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (tab?.id) {
-        await chrome.sidePanel.open({ tabId: tab.id });
+        await (chrome as any).sidePanel.open({ tabId: tab.id });
         window.close();
         return;
       }
@@ -400,7 +352,6 @@ async function openSidePanel(): Promise<void> {
 /** 主初始化函数 */
 async function init(): Promise<void> {
   setVersion();
-  await waitForECharts();
   await updateDashboard();
 
   document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);
