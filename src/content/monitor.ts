@@ -14,6 +14,10 @@ const ACTIVE_REPORT_INTERVAL = 60_000;
 /** 活跃状态上报定时器 */
 let activeReportTimer: ReturnType<typeof setInterval> | null = null;
 
+/** 发送检测防抖：同一秒内不重复计数 */
+let lastSendTime = 0;
+const SEND_DEBOUNCE_MS = 1000;
+
 /** 向 background 发送消息的封装 */
 function sendMessage(type: string, payload?: Record<string, unknown>): void {
   try {
@@ -21,6 +25,18 @@ function sendMessage(type: string, payload?: Record<string, unknown>): void {
   } catch {
     // 扩展上下文可能已失效（页面卸载等），静默忽略
   }
+}
+
+/** 带防抖的发送检测：避免 Enter+点击双重计数 */
+function detectUserSentQuestion(source: string): void {
+  const now = Date.now();
+  if (now - lastSendTime < SEND_DEBOUNCE_MS) {
+    console.log(`[EchoBreaker] 发送检测防抖忽略（${source}，距上次 ${now - lastSendTime}ms）`);
+    return;
+  }
+  lastSendTime = now;
+  console.log(`[EchoBreaker] 检测到用户发送问题（${source}）`);
+  sendMessage('USER_SENT_QUESTION');
 }
 
 /** 从 background 获取当前网站配置 */
@@ -56,45 +72,44 @@ function matchesSendButton(target: HTMLElement): boolean {
   return matchesAnySelector(target, siteConfig.sendButtonSelector);
 }
 
+/** 判断元素是否为输入区域 */
+function isInputElement(el: HTMLElement): boolean {
+  if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return true;
+  if (el.getAttribute('contenteditable') === 'true') return true;
+  if (siteConfig?.inputSelector && matchesAnySelector(el, siteConfig.inputSelector)) return true;
+  return false;
+}
+
 /** 监听发送按钮点击 */
 function monitorSendButton(): void {
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (matchesSendButton(target)) {
-      console.log('[EchoBreaker] 检测到发送按钮点击');
-      sendMessage('USER_SENT_QUESTION');
+      detectUserSentQuestion('按钮点击');
     }
   }, true);
 }
 
-/** 监听键盘 Enter 键发送（很多 AI 网站支持 Enter 发送） */
+/** 监听键盘 Enter 键发送 */
 function monitorEnterKey(): void {
   document.addEventListener('keydown', (e) => {
-    // 只在输入框中按 Enter（非 Shift+Enter）时触发
     if (e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
 
     const target = e.target as HTMLElement;
-    const isInput = target.tagName === 'TEXTAREA' ||
-      target.getAttribute('contenteditable') === 'true' ||
-      target.closest(siteConfig?.inputSelector || '__none__');
-
-    if (isInput) {
-      // 延迟发送消息，避免在用户按 Enter 换行时误触发
-      // 大多数 AI 网站在 Enter 后会清空输入框，我们检测这个变化
-      const inputBefore = (target as HTMLTextAreaElement).value || target.textContent || '';
-      setTimeout(() => {
-        const inputAfter = (target as HTMLTextAreaElement).value || target.textContent || '';
-        // 如果输入框被清空了，说明消息已发送
-        if (inputBefore.length > 0 && inputAfter.length === 0) {
-          console.log('[EchoBreaker] 检测到 Enter 键发送（输入框已清空）');
-          sendMessage('USER_SENT_QUESTION');
-        }
-      }, 300);
+    if (isInputElement(target)) {
+      detectUserSentQuestion('Enter键');
     }
   }, true);
 }
 
-/** 监听粘贴事件，通过消息通知 background */
+/** 监听表单提交事件（部分 AI 网站使用 form submit） */
+function monitorFormSubmit(): void {
+  document.addEventListener('submit', () => {
+    detectUserSentQuestion('表单提交');
+  }, true);
+}
+
+/** 监听粘贴事件 */
 function monitorPaste(): void {
   document.addEventListener('paste', () => {
     console.log('[EchoBreaker] 检测到粘贴操作');
@@ -118,7 +133,6 @@ function monitorVisibility(): void {
 /** 启动活跃状态定时上报 */
 function startActiveReporting(): void {
   if (activeReportTimer) return;
-  // 立即上报一次
   sendMessage('USER_ACTIVE');
   activeReportTimer = setInterval(() => {
     if (isActive) {
@@ -155,18 +169,16 @@ function scheduleIdleTask(task: () => void): void {
 
 /** 初始化 L0 监测层 */
 async function init(): Promise<void> {
-  // 获取网站配置
   await fetchSiteConfig();
 
-  // 使用 requestIdleCallback 延迟启动非紧急监听
   scheduleIdleTask(() => {
     monitorSendButton();
     monitorEnterKey();
+    monitorFormSubmit();
     monitorPaste();
     monitorVisibility();
     listenForAwakening();
 
-    // 页面初始可见时启动活跃上报
     if (document.visibilityState === 'visible') {
       startActiveReporting();
     }
