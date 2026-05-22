@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "回声破除者",
+  "version": "0.1.0",
+  "description": "认知抗阻伴学插件 - 在使用AI时保持独立思考",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://*.deepseek.com/*",
+    "https://*.kimi.moonshot.cn/*",
+    "https://*.chatgpt.com/*",
+    "https://*.chat.openai.com/*",
+    "https://*.yiyan.baidu.com/*",
+    "https://*.tongyi.aliyun.com/*",
+    "https://*.doubao.com/*",
+    "https://*.claude.ai/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.deepseek.com/*",
+        "https://*.kimi.moonshot.cn/*",
+        "https://*.chatgpt.com/*",
+        "https://*.chat.openai.com/*",
+        "https://*.yiyan.baidu.com/*",
+        "https://*.tongyi.aliyun.com/*",
+        "https://*.doubao.com/*",
+        "https://*.claude.ai/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "minimum_edge_version": "110.0.0"
+}

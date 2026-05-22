@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>思考日志</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body class="w-full h-screen bg-echo-dark text-white p-4 overflow-y-auto">
+  <header class="mb-4">
+    <h1 class="text-lg font-bold text-echo-glow">📝 思考日志</h1>
+    <p class="text-xs text-gray-400 mt-1">在获取AI答案前，先写下你的想法</p>
+  </header>
+
+  <section class="mb-4">
+    <label class="text-sm text-echo-warm block mb-2">我的第一步想法：</label>
+    <textarea
+      id="thought-input"
+      class="w-full h-24 bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white placeholder-gray-500 resize-none focus:outline-none focus:border-echo-glow"
+      placeholder="先想想你会怎么回答这个问题..."
+    ></textarea>
+  </section>
+
+  <section class="mb-4">
+    <label class="text-sm text-echo-warm block mb-2">我预期的关键点：</label>
+    <input
+      id="key-points-input"
+      class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-echo-glow"
+      placeholder="列出你认为答案应该包含的要点..."
+    />
+  </section>
+
+  <section id="analysis-section" class="hidden mb-4">
+    <h2 class="text-sm font-semibold text-echo-warm mb-2">思维偏差分析</h2>
+    <div id="analysis-content" class="bg-white/5 rounded-lg p-3 text-sm text-gray-300"></div>
+  </section>
+
+  <footer class="text-xs text-gray-500 text-center">
+    L3 元认知外显层 · 回声破除者
+  </footer>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

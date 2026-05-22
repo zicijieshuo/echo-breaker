@@ -1,0 +1,58 @@
+[
+  {
+    "domain": "deepseek.com",
+    "name": "DeepSeek",
+    "inputSelector": "textarea",
+    "sendButtonSelector": "button[type='submit']",
+    "responseSelector": ".markdown-body"
+  },
+  {
+    "domain": "kimi.moonshot.cn",
+    "name": "Kimi",
+    "inputSelector": "textarea",
+    "sendButtonSelector": ".send-button",
+    "responseSelector": ".message-content"
+  },
+  {
+    "domain": "chatgpt.com",
+    "name": "ChatGPT",
+    "inputSelector": "#prompt-textarea",
+    "sendButtonSelector": "[data-testid='send-button']",
+    "responseSelector": ".markdown"
+  },
+  {
+    "domain": "chat.openai.com",
+    "name": "ChatGPT (Legacy)",
+    "inputSelector": "#prompt-textarea",
+    "sendButtonSelector": "[data-testid='send-button']",
+    "responseSelector": ".markdown"
+  },
+  {
+    "domain": "yiyan.baidu.com",
+    "name": "文心一言",
+    "inputSelector": "textarea",
+    "sendButtonSelector": ".send-btn",
+    "responseSelector": ".response-content"
+  },
+  {
+    "domain": "tongyi.aliyun.com",
+    "name": "通义千问",
+    "inputSelector": "textarea",
+    "sendButtonSelector": ".send-button",
+    "responseSelector": ".markdown-body"
+  },
+  {
+    "domain": "doubao.com",
+    "name": "豆包",
+    "inputSelector": "textarea",
+    "sendButtonSelector": ".send-btn",
+    "responseSelector": ".message-content"
+  },
+  {
+    "domain": "claude.ai",
+    "name": "Claude",
+    "inputSelector": "div[contenteditable='true']",
+    "sendButtonSelector": "button[aria-label='Send message']",
+    "responseSelector": ".markdown"
+  }
+]

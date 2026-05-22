@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回声破除者</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body class="w-[360px] min-h-[480px] bg-echo-dark text-white p-4">
+  <header class="text-center mb-4">
+    <h1 class="text-xl font-bold text-echo-glow">🧠 回声破除者</h1>
+    <p class="text-xs text-gray-400 mt-1">认知抗阻伴学插件</p>
+  </header>
+
+  <section class="mb-4">
+    <h2 class="text-sm font-semibold text-echo-warm mb-2">今日概览</h2>
+    <div class="grid grid-cols-3 gap-2">
+      <div class="bg-white/5 rounded-lg p-3 text-center">
+        <div id="today-duration" class="text-lg font-bold text-echo-glow">00:00</div>
+        <div class="text-xs text-gray-400">使用时长</div>
+      </div>
+      <div class="bg-white/5 rounded-lg p-3 text-center">
+        <div id="today-rounds" class="text-lg font-bold text-echo-warm">0</div>
+        <div class="text-xs text-gray-400">连续提问</div>
+      </div>
+      <div class="bg-white/5 rounded-lg p-3 text-center">
+        <div id="today-copies" class="text-lg font-bold text-pink-400">0</div>
+        <div class="text-xs text-gray-400">复制次数</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="text-sm font-semibold text-echo-warm mb-2">本周趋势</h2>
+    <div id="weekly-chart" class="bg-white/5 rounded-lg p-2" style="height: 160px;"></div>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="text-sm font-semibold text-echo-warm mb-2">提问 vs 复制</h2>
+    <div id="ratio-chart" class="bg-white/5 rounded-lg p-2" style="height: 120px;"></div>
+  </section>
+
+  <footer class="flex items-center justify-between text-xs text-gray-500">
+    <span>v0.1.0</span>
+    <button id="settings-btn" class="text-echo-glow hover:underline">设置</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
