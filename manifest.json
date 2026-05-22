@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "回声破除者",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "认知抗阻伴学插件 - 在使用AI时保持独立思考",
   "permissions": [
     "storage",

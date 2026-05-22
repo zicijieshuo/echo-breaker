@@ -18,16 +18,49 @@ let activeReportTimer: ReturnType<typeof setInterval> | null = null;
 let lastSendTime = 0;
 const SEND_DEBOUNCE_MS = 1000;
 
-/** 向 background 发送消息的封装（带错误日志） */
+/** 扩展上下文是否已失效 */
+let contextInvalidated = false;
+
+/** 检查扩展上下文是否仍然有效 */
+function isContextValid(): boolean {
+  if (contextInvalidated) return false;
+  try {
+    // 尝试访问 chrome.runtime.id，如果上下文失效会抛出异常
+    if (!chrome.runtime?.id) {
+      contextInvalidated = true;
+      return false;
+    }
+  } catch {
+    contextInvalidated = true;
+    return false;
+  }
+  return true;
+}
+
+/** 向 background 发送消息的封装（带上下文失效检测） */
 function sendMessage(type: string, payload?: Record<string, unknown>): void {
+  if (!isContextValid()) {
+    // 上下文已失效，停止所有定时器
+    stopActiveReporting();
+    return;
+  }
   try {
     chrome.runtime.sendMessage({ type, payload }, (response) => {
       if (chrome.runtime.lastError) {
-        console.warn(`[EchoBreaker] 消息发送失败 (${type}):`, chrome.runtime.lastError.message);
+        const errMsg = chrome.runtime.lastError.message || '';
+        if (errMsg.includes('Extension context invalidated') || errMsg.includes('message port closed')) {
+          console.warn('[EchoBreaker] 扩展上下文已失效，停止消息发送');
+          contextInvalidated = true;
+          stopActiveReporting();
+        }
       }
     });
   } catch (err) {
-    console.warn(`[EchoBreaker] 消息发送异常 (${type}):`, err);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    if (errMsg.includes('Extension context invalidated')) {
+      contextInvalidated = true;
+      stopActiveReporting();
+    }
   }
 }
 
