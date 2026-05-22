@@ -193,30 +193,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'USER_ACTIVE': {
       // 用户活跃，累加活跃时长
       handleUserActive();
+      sendResponse({ ok: true });
       return false;
     }
 
     case 'USER_PASTED': {
       // 用户粘贴，增加计数
       handleUserPasted();
+      sendResponse({ ok: true });
       return false;
     }
 
     case 'USER_SENT_QUESTION': {
       // 用户发送问题
       handleUserQuestion(sender.tab?.id);
+      sendResponse({ ok: true });
       return false;
     }
 
     case 'TRIGGER_DISMISSED': {
       // 用户选择"继续使用"，记录 dismissed，重置连续轮数
       handleTriggerDismissed();
+      sendResponse({ ok: true });
       return false;
     }
 
     case 'TRIGGER_PAUSED': {
       // 用户选择"暂停思考"，记录 paused，重置连续轮数，设置5分钟后提醒
       handleTriggerPaused();
+      sendResponse({ ok: true });
       return false;
     }
 
