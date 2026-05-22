@@ -24,8 +24,80 @@ const SOCRATIC_PROMPTS = [
   '每一个好问题背后，都有一个更好的问题在等着你。',
 ];
 
-/** 创建"认知柔光"UI */
-function createAwakeningUI(prompt: string): HTMLDivElement {
+/** 向 background 发送消息的封装 */
+function sendMessage(type: string, payload?: Record<string, unknown>): void {
+  try {
+    chrome.runtime.sendMessage({ type, payload });
+  } catch {
+    // 扩展上下文可能已失效，静默忽略
+  }
+}
+
+/** 注入全局样式（仅一次） */
+function injectStyles(): void {
+  if (document.getElementById('echo-breaker-style')) return;
+
+  const style = document.createElement('style');
+  style.id = 'echo-breaker-style';
+  style.textContent = `
+    /* 边缘柔光动画 */
+    @keyframes echoEdgeGlow {
+      0% { opacity: 0; }
+      30% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* 卡片淡入动画 */
+    @keyframes echoCardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 呼吸动画 */
+    @keyframes echoBreathe {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+
+    /* 关闭按钮悬停 */
+    #echo-breaker-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+/** 创建屏幕边缘柔光效果 */
+function createEdgeGlow(): HTMLDivElement {
+  const glow = document.createElement('div');
+  glow.id = 'echo-breaker-edge-glow';
+  glow.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    box-shadow:
+      inset 0 80px 60px -40px rgba(99, 102, 241, 0.25),
+      inset 0 -80px 60px -40px rgba(99, 102, 241, 0.25),
+      inset 80px 0 60px -40px rgba(99, 102, 241, 0.25),
+      inset -80px 0 60px -40px rgba(99, 102, 241, 0.25);
+    animation: echoEdgeGlow 2s ease-in-out;
+  `;
+  return glow;
+}
+
+/** 创建唤醒卡片 UI */
+function createAwakeningCard(prompt: string): HTMLDivElement {
   const overlay = document.createElement('div');
   overlay.id = 'echo-breaker-awakening';
   overlay.style.cssText = `
@@ -44,6 +116,7 @@ function createAwakeningUI(prompt: string): HTMLDivElement {
   const card = document.createElement('div');
   card.style.cssText = `
     pointer-events: auto;
+    position: relative;
     background: rgba(30, 27, 75, 0.95);
     color: #e0e7ff;
     border-radius: 16px;
@@ -51,11 +124,34 @@ function createAwakeningUI(prompt: string): HTMLDivElement {
     max-width: 420px;
     text-align: center;
     box-shadow: 0 0 60px rgba(99, 102, 241, 0.4), 0 0 120px rgba(129, 140, 248, 0.2);
-    animation: echoBreathe 3s ease-in-out infinite;
+    animation: echoCardFadeIn 0.5s ease-out forwards, echoBreathe 3s ease-in-out 0.5s infinite;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   `;
 
-  card.innerHTML = `
+  // 关闭按钮（右上角 X）
+  const closeBtn = document.createElement('div');
+  closeBtn.id = 'echo-breaker-close';
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #a5b4fc;
+    font-size: 16px;
+    line-height: 1;
+    user-select: none;
+    transition: background 0.2s;
+  `;
+  closeBtn.textContent = '✕';
+
+  const content = document.createElement('div');
+  content.innerHTML = `
     <div style="font-size: 28px; margin-bottom: 12px;">🧠</div>
     <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">${prompt}</p>
     <div style="display: flex; gap: 12px; justify-content: center;">
@@ -67,6 +163,7 @@ function createAwakeningUI(prompt: string): HTMLDivElement {
         color: #a5b4fc;
         cursor: pointer;
         font-size: 14px;
+        transition: background 0.2s;
       ">继续使用</button>
       <button id="echo-pause" style="
         padding: 8px 20px;
@@ -76,39 +173,40 @@ function createAwakeningUI(prompt: string): HTMLDivElement {
         color: white;
         cursor: pointer;
         font-size: 14px;
+        transition: background 0.2s;
       ">暂停思考</button>
     </div>
   `;
 
+  card.appendChild(closeBtn);
+  card.appendChild(content);
   overlay.appendChild(card);
 
-  // 注入呼吸动画
-  if (!document.getElementById('echo-breaker-style')) {
-    const style = document.createElement('style');
-    style.id = 'echo-breaker-style';
-    style.textContent = `
-      @keyframes echoBreathe {
-        0%, 100% { opacity: 0.9; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.02); }
-      }
-    `;
-    document.head.appendChild(style);
+  // 关闭弹窗的通用方法
+  function dismissOverlay(): void {
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.5s';
+    setTimeout(() => overlay.remove(), 500);
   }
 
   // 绑定按钮事件
   setTimeout(() => {
+    // "继续使用"：关闭弹窗，记录 dismiss，重置连续轮数
     document.getElementById('echo-dismiss')?.addEventListener('click', () => {
-      overlay.style.opacity = '0';
-      overlay.style.transition = 'opacity 0.5s';
-      setTimeout(() => overlay.remove(), 500);
-      chrome.runtime.sendMessage({ type: 'USER_DISMISSED_TRIGGER' });
+      dismissOverlay();
+      sendMessage('TRIGGER_DISMISSED');
     });
 
+    // "暂停思考"：关闭弹窗，记录 pause，重置连续轮数，5分钟后再次提醒
     document.getElementById('echo-pause')?.addEventListener('click', () => {
-      overlay.style.opacity = '0';
-      overlay.style.transition = 'opacity 0.5s';
-      setTimeout(() => overlay.remove(), 500);
-      chrome.runtime.sendMessage({ type: 'USER_DISMISSED_TRIGGER' });
+      dismissOverlay();
+      sendMessage('TRIGGER_PAUSED');
+    });
+
+    // 关闭按钮：等同于"继续使用"
+    document.getElementById('echo-breaker-close')?.addEventListener('click', () => {
+      dismissOverlay();
+      sendMessage('TRIGGER_DISMISSED');
     });
   }, 0);
 
@@ -120,14 +218,34 @@ function getRandomPrompt(): string {
   return SOCRATIC_PROMPTS[Math.floor(Math.random() * SOCRATIC_PROMPTS.length)];
 }
 
-/** 监听唤醒事件 */
-document.addEventListener('echo-breaker-awaken', () => {
+/** 显示唤醒 UI（含边缘柔光前置效果） */
+function showAwakening(): void {
   // 避免重复弹窗
   if (document.getElementById('echo-breaker-awakening')) return;
+  if (document.getElementById('echo-breaker-edge-glow')) return;
 
-  const prompt = getRandomPrompt();
-  const ui = createAwakeningUI(prompt);
-  document.body.appendChild(ui);
+  injectStyles();
+
+  // 先显示边缘柔光，1秒后显示卡片
+  const glow = createEdgeGlow();
+  document.body.appendChild(glow);
+
+  setTimeout(() => {
+    // 移除柔光效果
+    glow.remove();
+
+    // 再次检查避免竞态
+    if (document.getElementById('echo-breaker-awakening')) return;
+
+    const prompt = getRandomPrompt();
+    const card = createAwakeningCard(prompt);
+    document.body.appendChild(card);
+  }, 1000);
+}
+
+/** 监听唤醒事件 */
+document.addEventListener('echo-breaker-awaken', () => {
+  showAwakening();
 });
 
 console.log('[EchoBreaker] L1 唤醒层已启动');

@@ -5,44 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>回声破除者</title>
   <link rel="stylesheet" href="popup.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 </head>
-<body class="w-[360px] min-h-[480px] bg-echo-dark text-white p-4">
-  <header class="text-center mb-4">
-    <h1 class="text-xl font-bold text-echo-glow">🧠 回声破除者</h1>
-    <p class="text-xs text-gray-400 mt-1">认知抗阻伴学插件</p>
+<body class="w-[380px] min-h-[520px] bg-echo-dark text-white p-4">
+  <!-- 头部：标题 + 当前状态 -->
+  <header class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-xl font-bold text-echo-glow">🧠 回声破除者</h1>
+      <p class="text-xs text-gray-400 mt-1">认知抗阻伴学插件</p>
+    </div>
+    <div id="status-indicator" class="flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1">
+      <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500"></span>
+      <span id="status-text" class="text-xs text-gray-400">未监测</span>
+    </div>
   </header>
 
+  <!-- 今日概览 -->
   <section class="mb-4">
     <h2 class="text-sm font-semibold text-echo-warm mb-2">今日概览</h2>
     <div class="grid grid-cols-3 gap-2">
-      <div class="bg-white/5 rounded-lg p-3 text-center">
+      <div class="bg-white/5 rounded-xl p-3 text-center">
         <div id="today-duration" class="text-lg font-bold text-echo-glow">00:00</div>
         <div class="text-xs text-gray-400">使用时长</div>
       </div>
-      <div class="bg-white/5 rounded-lg p-3 text-center">
+      <div class="bg-white/5 rounded-xl p-3 text-center">
         <div id="today-rounds" class="text-lg font-bold text-echo-warm">0</div>
         <div class="text-xs text-gray-400">连续提问</div>
       </div>
-      <div class="bg-white/5 rounded-lg p-3 text-center">
+      <div class="bg-white/5 rounded-xl p-3 text-center">
         <div id="today-copies" class="text-lg font-bold text-pink-400">0</div>
         <div class="text-xs text-gray-400">复制次数</div>
       </div>
     </div>
   </section>
 
+  <!-- 本周趋势图 -->
   <section class="mb-4">
     <h2 class="text-sm font-semibold text-echo-warm mb-2">本周趋势</h2>
-    <div id="weekly-chart" class="bg-white/5 rounded-lg p-2" style="height: 160px;"></div>
+    <div id="weekly-chart" class="bg-white/5 rounded-xl p-2" style="height: 180px;"></div>
   </section>
 
+  <!-- 提问 vs 复制比例图 -->
   <section class="mb-4">
     <h2 class="text-sm font-semibold text-echo-warm mb-2">提问 vs 复制</h2>
-    <div id="ratio-chart" class="bg-white/5 rounded-lg p-2" style="height: 120px;"></div>
+    <div id="ratio-chart" class="bg-white/5 rounded-xl p-2" style="height: 150px;"></div>
   </section>
 
+  <!-- 高频使用时段 -->
+  <section class="mb-4">
+    <h2 class="text-sm font-semibold text-echo-warm mb-2">高频使用时段</h2>
+    <div id="hourly-chart" class="bg-white/5 rounded-xl p-2" style="height: 150px;"></div>
+  </section>
+
+  <!-- 底部操作栏 -->
   <footer class="flex items-center justify-between text-xs text-gray-500">
-    <span>v0.1.0</span>
-    <button id="settings-btn" class="text-echo-glow hover:underline">设置</button>
+    <span id="version-text">v0.0.0</span>
+    <div class="flex items-center gap-3">
+      <button id="clear-btn" class="text-red-400/70 hover:text-red-400 transition-colors">清除今日数据</button>
+      <button id="settings-btn" class="text-echo-glow hover:underline">设置</button>
+    </div>
   </footer>
 
   <script src="popup.js"></script>

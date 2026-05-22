@@ -12,6 +12,10 @@ export const THRESHOLDS = {
   SIMILARITY_THRESHOLD: 0.85,
   /** 每日API调用上限 */
   DAILY_API_LIMIT: 50,
+  /** 触发冷却时间（毫秒）：30分钟 */
+  TRIGGER_COOLDOWN: 30 * 60 * 1000,
+  /** 暂停思考后再次提醒时间（分钟） */
+  PAUSE_REMIND_DELAY: 5,
 } as const;
 
 /** 存储键名 */
@@ -20,6 +24,8 @@ export const STORAGE_KEYS = {
   SETTINGS: 'echo_breaker_settings',
   SOCRATIC_PROMPTS: 'echo_breaker_prompts',
   TRIGGER_LOG: 'echo_breaker_triggers',
+  AI_WEBSITES: 'echo_breaker_websites',
+  LAST_TRIGGER_TIME: 'echo_breaker_last_trigger',
 } as const;
 
 /** 场景与干预模式映射 */
@@ -35,4 +41,12 @@ export const SCENARIO_MODE_MAP: Record<string, string> = {
 export const SCENARIO_URL_RULES: Record<string, string[]> = {
   thesis: ['cnki.net', 'xueshu.baidu.com'],
   reading: ['douban.com/book', 'goodreads.com'],
+} as const;
+
+/** Alarm 名称常量 */
+export const ALARM_NAMES = {
+  /** 每分钟计时检查 */
+  TIMER: 'echoTimer',
+  /** 暂停后再次提醒 */
+  PAUSE_REMIND: 'echoPauseRemind',
 } as const;
