@@ -42,6 +42,13 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
   const container = document.getElementById('weekly-chart');
   if (!container) return;
 
+  // 确保容器有尺寸
+  const rect = container.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    console.warn('[EchoBreaker] weekly-chart 容器尺寸为0，跳过初始化');
+    return;
+  }
+
   if (!weeklyChartInstance) {
     weeklyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
   }
@@ -91,6 +98,12 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
 function initRatioChart(questions: number, copies: number): void {
   const container = document.getElementById('ratio-chart');
   if (!container) return;
+
+  const rect = container.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    console.warn('[EchoBreaker] ratio-chart 容器尺寸为0，跳过初始化');
+    return;
+  }
 
   if (!ratioChartInstance) {
     ratioChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
@@ -149,6 +162,12 @@ function initRatioChart(questions: number, copies: number): void {
 function initHourlyChart(hourlyData: number[]): void {
   const container = document.getElementById('hourly-chart');
   if (!container) return;
+
+  const rect = container.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    console.warn('[EchoBreaker] hourly-chart 容器尺寸为0，跳过初始化');
+    return;
+  }
 
   if (!hourlyChartInstance) {
     hourlyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
@@ -352,6 +371,22 @@ async function openSidePanel(): Promise<void> {
 /** 主初始化函数 */
 async function init(): Promise<void> {
   setVersion();
+
+  // 等待 DOM 完全渲染后再初始化图表
+  await new Promise<void>((resolve) => {
+    if (document.readyState === 'complete') {
+      // 延迟一帧确保布局计算完成
+      requestAnimationFrame(() => resolve());
+    } else {
+      window.addEventListener('load', () => {
+        requestAnimationFrame(() => resolve());
+      });
+    }
+  });
+
+  // 额外延迟确保 popup 尺寸已确定
+  await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
   await updateDashboard();
 
   document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);

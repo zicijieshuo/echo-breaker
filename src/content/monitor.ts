@@ -136,8 +136,14 @@ function monitorFormSubmit(): void {
   }, true);
 }
 
-/** 监听粘贴事件 */
-function monitorPaste(): void {
+/** 监听复制和粘贴事件 */
+function monitorCopyPaste(): void {
+  // 监听复制（用户从AI回复中复制内容）
+  document.addEventListener('copy', () => {
+    console.log('[EchoBreaker] 检测到复制操作');
+    sendMessage('USER_PASTED');
+  }, true);
+  // 监听粘贴（用户粘贴内容到输入框）
   document.addEventListener('paste', () => {
     console.log('[EchoBreaker] 检测到粘贴操作');
     sendMessage('USER_PASTED');
@@ -202,7 +208,7 @@ async function init(): Promise<void> {
     monitorSendButton();
     monitorEnterKey();
     monitorFormSubmit();
-    monitorPaste();
+    monitorCopyPaste();
     monitorVisibility();
     listenForAwakening();
 
