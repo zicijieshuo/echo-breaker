@@ -1,17 +1,5 @@
 // 回声破除者 - Popup 数据看板脚本
 
-/** AI 网站域名列表（用于状态检测） */
-const AI_DOMAINS = [
-  'deepseek.com',
-  'kimi.moonshot.cn',
-  'chatgpt.com',
-  'chat.openai.com',
-  'yiyan.baidu.com',
-  'tongyi.aliyun.com',
-  'doubao.com',
-  'claude.ai',
-];
-
 /** ECharts 实例缓存 */
 let weeklyChartInstance: any = null;
 let ratioChartInstance: any = null;
@@ -60,7 +48,6 @@ function waitForECharts(): Promise<void> {
         resolve();
       }
     }, 50);
-    // 最多等5秒
     setTimeout(() => {
       clearInterval(check);
       resolve();
@@ -145,7 +132,6 @@ function initRatioChart(questions: number, copies: number): void {
     ratioChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
   }
 
-  // 无数据时显示占位
   const hasData = questions > 0 || copies > 0;
   const data = hasData
     ? [
@@ -207,7 +193,6 @@ function initHourlyChart(hourlyData: number[]): void {
     hourlyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
   }
 
-  // 将24小时分为6个时段，每个4小时
   const periodLabels = ['0-4时', '4-8时', '8-12时', '12-16时', '16-20时', '20-24时'];
   const periodData = [
     hourlyData.slice(0, 4).reduce((a, b) => a + b, 0),
@@ -267,28 +252,25 @@ function initHourlyChart(hourlyData: number[]): void {
   hourlyChartInstance.setOption(option, true);
 }
 
-/** 更新当前状态指示器 */
+/** 更新当前状态指示器（通过 background 查询） */
 async function updateStatusIndicator(): Promise<void> {
   const dot = document.getElementById('status-dot');
   const text = document.getElementById('status-text');
   if (!dot || !text) return;
 
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.url) {
-      const hostname = new URL(tab.url).hostname;
-      const isAI = AI_DOMAINS.some((domain) => hostname.includes(domain));
-      if (isAI) {
-        dot.className = 'w-2 h-2 rounded-full bg-green-400';
-        dot.style.animation = 'pulse 2s infinite';
-        text.textContent = '正在监测';
-        text.className = 'text-xs text-green-400';
-      } else {
-        dot.className = 'w-2 h-2 rounded-full bg-gray-500';
-        dot.style.animation = '';
-        text.textContent = '未监测';
-        text.className = 'text-xs text-gray-400';
-      }
+    // 通过 background 查询当前标签页是否为 AI 网站
+    const result: any = await chrome.runtime.sendMessage({ type: 'CHECK_CURRENT_SITE' });
+    if (result?.isAI) {
+      dot.className = 'w-2 h-2 rounded-full bg-green-400';
+      dot.style.animation = 'pulse 2s infinite';
+      text.textContent = `正在监测 · ${result.siteName || ''}`;
+      text.className = 'text-xs text-green-400';
+    } else {
+      dot.className = 'w-2 h-2 rounded-full bg-gray-500';
+      dot.style.animation = '';
+      text.textContent = '未监测';
+      text.className = 'text-xs text-gray-400';
     }
   } catch {
     dot.className = 'w-2 h-2 rounded-full bg-gray-500';
@@ -301,10 +283,8 @@ async function updateStatusIndicator(): Promise<void> {
 /** 更新整个看板数据 */
 async function updateDashboard(): Promise<void> {
   try {
-    // 获取今日数据
     const todayData: any = await chrome.runtime.sendMessage({ type: 'GET_TODAY_DATA' });
 
-    // 更新今日概览
     const durationEl = document.getElementById('today-duration');
     const roundsEl = document.getElementById('today-rounds');
     const copiesEl = document.getElementById('today-copies');
@@ -313,30 +293,25 @@ async function updateDashboard(): Promise<void> {
     if (roundsEl) roundsEl.textContent = String(todayData?.consecutive_rounds || 0);
     if (copiesEl) copiesEl.textContent = String(todayData?.copy_paste_count || 0);
 
-    // 获取周数据
     const weeklyData: any = await chrome.runtime.sendMessage({ type: 'GET_WEEKLY_DATA' });
 
-    // 本周趋势图
     const dates = weeklyData?.dates || getRecentDays(7);
     const weekMinutes = (weeklyData?.records || []).map(
       (r: any) => Math.round((r?.total_seconds || 0) / 60)
     );
     initWeeklyChart(dates, weekMinutes);
 
-    // 提问 vs 复制比例图
     const totalQuestions = (weeklyData?.records || []).reduce(
-      (sum: number, r: any) => sum + (r?.consecutive_rounds || 0), 0
+      (sum: number, r: any) => sum + (r?.question_count || r?.consecutive_rounds || 0), 0
     );
     const totalCopies = (weeklyData?.records || []).reduce(
       (sum: number, r: any) => sum + (r?.copy_paste_count || 0), 0
     );
     initRatioChart(totalQuestions, totalCopies);
 
-    // 高频使用时段
     const hourlyMinutes = weeklyData?.hourly || new Array(24).fill(0);
     initHourlyChart(hourlyMinutes);
 
-    // 更新状态指示器
     await updateStatusIndicator();
   } catch (err) {
     console.error('[EchoBreaker Popup] 更新看板失败:', err);
@@ -366,10 +341,41 @@ async function clearTodayData(): Promise<void> {
   }
 }
 
+/** 导出完整日志（所有存储数据 + 扩展信息） */
+async function exportLogs(): Promise<void> {
+  try {
+    // 收集所有数据
+    const allData = await chrome.storage.local.get(null);
+    const manifest = chrome.runtime.getManifest();
+
+    const logData = {
+      exportTime: new Date().toISOString(),
+      extensionVersion: manifest.version,
+      extensionName: manifest.name,
+      allStorageData: allData,
+    };
+
+    const jsonStr = JSON.stringify(logData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    // 创建下载链接
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `echo-breaker-log-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 导出日志失败:', err);
+    alert('导出日志失败: ' + (err instanceof Error ? err.message : String(err)));
+  }
+}
+
 /** 打开侧边栏面板 */
 async function openSidePanel(): Promise<void> {
   try {
-    // 优先使用 sidePanel API（Chrome 114+）
     if (chrome.sidePanel?.open) {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (tab?.id) {
@@ -378,7 +384,6 @@ async function openSidePanel(): Promise<void> {
         return;
       }
     }
-    // 回退：使用 windows.create 打开 sidepanel
     chrome.windows.create({
       url: chrome.runtime.getURL('sidepanel.html'),
       type: 'panel',
@@ -388,29 +393,21 @@ async function openSidePanel(): Promise<void> {
     window.close();
   } catch (err) {
     console.error('[EchoBreaker Popup] 打开侧边栏失败:', err);
-    // 最终回退：打开选项页
     chrome.runtime.openOptionsPage();
   }
 }
 
 /** 主初始化函数 */
 async function init(): Promise<void> {
-  // 设置版本号
   setVersion();
-
-  // 等待 ECharts 加载
   await waitForECharts();
-
-  // 首次更新看板
   await updateDashboard();
 
-  // 绑定事件
   document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);
   document.getElementById('clear-btn')?.addEventListener('click', clearTodayData);
+  document.getElementById('export-btn')?.addEventListener('click', exportLogs);
 
-  // 每30秒自动刷新
   refreshTimer = setInterval(updateDashboard, 30000);
 }
 
-// 启动
 init();

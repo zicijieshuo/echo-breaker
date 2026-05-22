@@ -231,6 +231,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       getWeeklyData().then(sendResponse);
       return true; // 异步响应
     }
+
+    case 'CHECK_CURRENT_SITE': {
+      // Popup 查询当前标签页是否为 AI 网站
+      handleCheckCurrentSite().then(sendResponse);
+      return true;
+    }
+
+    case 'CLEAR_TODAY_DATA': {
+      // 清除今日数据
+      handleClearTodayData().then(() => sendResponse({ success: true }));
+      return true;
+    }
   }
 
   return false;
@@ -281,6 +293,31 @@ async function handleTriggerPaused(): Promise<void> {
   chrome.alarms.create(ALARM_NAMES.PAUSE_REMIND, {
     delayInMinutes: THRESHOLDS.PAUSE_REMIND_DELAY,
   });
+}
+
+/** 处理查询当前标签页是否为 AI 网站 */
+async function handleCheckCurrentSite(): Promise<{ isAI: boolean; siteName?: string }> {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.url) {
+      const config = matchSiteConfig(tab.url);
+      if (config) {
+        return { isAI: true, siteName: config.name };
+      }
+    }
+  } catch {
+    // 忽略错误
+  }
+  return { isAI: false };
+}
+
+/** 处理清除今日数据 */
+async function handleClearTodayData(): Promise<void> {
+  const data = await chrome.storage.local.get(STORAGE_KEYS.USAGE_DATA);
+  const usageData = data[STORAGE_KEYS.USAGE_DATA] || {};
+  const today = new Date().toISOString().split('T')[0];
+  delete usageData[today];
+  await chrome.storage.local.set({ [STORAGE_KEYS.USAGE_DATA]: usageData });
 }
 
 // 初始化时加载配置
