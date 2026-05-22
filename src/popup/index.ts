@@ -40,17 +40,19 @@ function formatDateLabel(dateStr: string): string {
 /** 初始化本周趋势柱状图 */
 function initWeeklyChart(dates: string[], minutes: number[]): void {
   const container = document.getElementById('weekly-chart');
-  if (!container) return;
-
-  // 确保容器有尺寸
-  const rect = container.getBoundingClientRect();
-  if (rect.width === 0 || rect.height === 0) {
-    console.warn('[EchoBreaker] weekly-chart 容器尺寸为0，跳过初始化');
+  if (!container) {
+    console.error('[EchoBreaker] weekly-chart 容器不存在');
     return;
   }
 
-  if (!weeklyChartInstance) {
-    weeklyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+  try {
+    if (!weeklyChartInstance) {
+      weeklyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+    }
+    weeklyChartInstance.resize();
+  } catch (err) {
+    console.error('[EchoBreaker] weekly-chart ECharts初始化失败:', err);
+    return;
   }
 
   const option: echarts.EChartsOption = {
@@ -97,16 +99,19 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
 /** 初始化提问 vs 复制环形图 */
 function initRatioChart(questions: number, copies: number): void {
   const container = document.getElementById('ratio-chart');
-  if (!container) return;
-
-  const rect = container.getBoundingClientRect();
-  if (rect.width === 0 || rect.height === 0) {
-    console.warn('[EchoBreaker] ratio-chart 容器尺寸为0，跳过初始化');
+  if (!container) {
+    console.error('[EchoBreaker] ratio-chart 容器不存在');
     return;
   }
 
-  if (!ratioChartInstance) {
-    ratioChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+  try {
+    if (!ratioChartInstance) {
+      ratioChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+    }
+    ratioChartInstance.resize();
+  } catch (err) {
+    console.error('[EchoBreaker] ratio-chart ECharts初始化失败:', err);
+    return;
   }
 
   const hasData = questions > 0 || copies > 0;
@@ -161,16 +166,19 @@ function initRatioChart(questions: number, copies: number): void {
 /** 初始化高频使用时段横向条形图 */
 function initHourlyChart(hourlyData: number[]): void {
   const container = document.getElementById('hourly-chart');
-  if (!container) return;
-
-  const rect = container.getBoundingClientRect();
-  if (rect.width === 0 || rect.height === 0) {
-    console.warn('[EchoBreaker] hourly-chart 容器尺寸为0，跳过初始化');
+  if (!container) {
+    console.error('[EchoBreaker] hourly-chart 容器不存在');
     return;
   }
 
-  if (!hourlyChartInstance) {
-    hourlyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+  try {
+    if (!hourlyChartInstance) {
+      hourlyChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+    }
+    hourlyChartInstance.resize();
+  } catch (err) {
+    console.error('[EchoBreaker] hourly-chart ECharts初始化失败:', err);
+    return;
   }
 
   const periodLabels = ['0-4时', '4-8时', '8-12时', '12-16时', '16-20时', '20-24时'];
