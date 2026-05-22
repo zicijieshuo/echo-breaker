@@ -40,10 +40,7 @@ function formatDateLabel(dateStr: string): string {
 /** 初始化本周趋势柱状图 */
 function initWeeklyChart(dates: string[], minutes: number[]): void {
   const container = document.getElementById('weekly-chart');
-  if (!container) {
-    console.error('[EchoBreaker] weekly-chart 容器不存在');
-    return;
-  }
+  if (!container) return;
 
   try {
     if (!weeklyChartInstance) {
@@ -55,7 +52,16 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
     return;
   }
 
+  const hasData = minutes.some((v) => v > 0);
+
   const option: echarts.EChartsOption = {
+    backgroundColor: 'transparent',
+    title: hasData ? undefined : {
+      text: '暂无数据',
+      left: 'center',
+      top: 'center',
+      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+    },
     grid: { top: 15, right: 12, bottom: 24, left: 36 },
     xAxis: {
       type: 'category',
@@ -70,6 +76,7 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
       axisTick: { show: false },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
       axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 10, formatter: '{value}m' },
+      minInterval: 1,
     },
     tooltip: {
       trigger: 'axis',
@@ -99,10 +106,7 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
 /** 初始化提问 vs 复制环形图 */
 function initRatioChart(questions: number, copies: number): void {
   const container = document.getElementById('ratio-chart');
-  if (!container) {
-    console.error('[EchoBreaker] ratio-chart 容器不存在');
-    return;
-  }
+  if (!container) return;
 
   try {
     if (!ratioChartInstance) {
@@ -121,10 +125,17 @@ function initRatioChart(questions: number, copies: number): void {
         { value: copies, name: '复制次数', itemStyle: { color: '#f59e0b' } },
       ]
     : [
-        { value: 1, name: '暂无数据', itemStyle: { color: 'rgba(255,255,255,0.08)' } },
+        { value: 1, name: '暂无数据', itemStyle: { color: 'rgba(255,255,255,0.06)' } },
       ];
 
   const option: echarts.EChartsOption = {
+    backgroundColor: 'transparent',
+    title: hasData ? undefined : {
+      text: '暂无数据',
+      left: 'center',
+      top: '35%',
+      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+    },
     tooltip: hasData ? {
       trigger: 'item',
       backgroundColor: 'rgba(30,27,75,0.9)',
@@ -191,9 +202,17 @@ function initHourlyChart(hourlyData: number[]): void {
     hourlyData.slice(20, 24).reduce((a, b) => a + b, 0),
   ];
 
+  const hasData = periodData.some((v) => v > 0);
   const maxVal = Math.max(...periodData, 1);
 
   const option: echarts.EChartsOption = {
+    backgroundColor: 'transparent',
+    title: hasData ? undefined : {
+      text: '暂无数据',
+      left: 'center',
+      top: 'center',
+      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+    },
     grid: { top: 8, right: 36, bottom: 8, left: 52 },
     xAxis: {
       type: 'value',
@@ -380,21 +399,21 @@ async function openSidePanel(): Promise<void> {
 async function init(): Promise<void> {
   setVersion();
 
-  // 等待 DOM 完全渲染后再初始化图表
+  // 等待 DOM 完全渲染
   await new Promise<void>((resolve) => {
     if (document.readyState === 'complete') {
-      // 延迟一帧确保布局计算完成
-      requestAnimationFrame(() => resolve());
+      setTimeout(resolve, 200);
     } else {
-      window.addEventListener('load', () => {
-        requestAnimationFrame(() => resolve());
-      });
+      window.addEventListener('load', () => setTimeout(resolve, 200));
     }
   });
 
-  // 额外延迟确保 popup 尺寸已确定
-  await new Promise<void>((resolve) => setTimeout(resolve, 100));
+  // 先初始化空图表（确保容器尺寸正确）
+  initWeeklyChart(getRecentDays(7), [0, 0, 0, 0, 0, 0, 0]);
+  initRatioChart(0, 0);
+  initHourlyChart(new Array(24).fill(0));
 
+  // 然后获取数据并更新
   await updateDashboard();
 
   document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);
