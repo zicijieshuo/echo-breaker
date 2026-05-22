@@ -18,20 +18,23 @@ let activeReportTimer: ReturnType<typeof setInterval> | null = null;
 let lastSendTime = 0;
 const SEND_DEBOUNCE_MS = 1000;
 
-/** 向 background 发送消息的封装 */
+/** 向 background 发送消息的封装（带错误日志） */
 function sendMessage(type: string, payload?: Record<string, unknown>): void {
   try {
-    chrome.runtime.sendMessage({ type, payload });
-  } catch {
-    // 扩展上下文可能已失效（页面卸载等），静默忽略
+    chrome.runtime.sendMessage({ type, payload }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.warn(`[EchoBreaker] 消息发送失败 (${type}):`, chrome.runtime.lastError.message);
+      }
+    });
+  } catch (err) {
+    console.warn(`[EchoBreaker] 消息发送异常 (${type}):`, err);
   }
 }
 
-/** 带防抖的发送检测：避免 Enter+点击双重计数 */
+/** 带防抖的发送检测 */
 function detectUserSentQuestion(source: string): void {
   const now = Date.now();
   if (now - lastSendTime < SEND_DEBOUNCE_MS) {
-    console.log(`[EchoBreaker] 发送检测防抖忽略（${source}，距上次 ${now - lastSendTime}ms）`);
     return;
   }
   lastSendTime = now;
@@ -39,20 +42,22 @@ function detectUserSentQuestion(source: string): void {
   sendMessage('USER_SENT_QUESTION');
 }
 
-/** 从 background 获取当前网站配置 */
+/** 从 background 获取当前网站配置（异步，不阻塞监听注册） */
 async function fetchSiteConfig(): Promise<void> {
   try {
     const response = await chrome.runtime.sendMessage({ type: 'GET_SITE_CONFIG' });
     if (response && response.domain) {
       siteConfig = response as AIWebsite;
       console.log(`[EchoBreaker] 已加载网站配置: ${siteConfig.name}`);
+    } else {
+      console.warn('[EchoBreaker] 未匹配到网站配置，使用通用检测');
     }
-  } catch {
-    console.warn('[EchoBreaker] 获取网站配置失败');
+  } catch (err) {
+    console.warn('[EchoBreaker] 获取网站配置失败，使用通用检测:', err);
   }
 }
 
-/** 多选择器容错匹配：尝试逗号分隔的多个选择器 */
+/** 多选择器容错匹配 */
 function matchesAnySelector(target: HTMLElement, selectorStr: string): boolean {
   if (!selectorStr) return false;
   const selectors = selectorStr.split(',').map((s) => s.trim()).filter(Boolean);
@@ -64,12 +69,6 @@ function matchesAnySelector(target: HTMLElement, selectorStr: string): boolean {
     }
   }
   return false;
-}
-
-/** 根据配置的 sendButtonSelector 精确匹配发送按钮 */
-function matchesSendButton(target: HTMLElement): boolean {
-  if (!siteConfig?.sendButtonSelector) return false;
-  return matchesAnySelector(target, siteConfig.sendButtonSelector);
 }
 
 /** 判断元素是否为输入区域 */
@@ -85,32 +84,37 @@ function monitorSendButton(): void {
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
 
-    // 优先匹配配置的选择器
+    // 1. 优先匹配配置的选择器
     if (siteConfig?.sendButtonSelector && matchesAnySelector(target, siteConfig.sendButtonSelector)) {
       detectUserSentQuestion('按钮点击');
       return;
     }
 
-    // 通用兜底：匹配 role="button" 且在输入区域附近的元素
+    // 2. 通用兜底：匹配 role="button" 且在输入区域附近
     const buttonEl = target.closest('[role="button"]');
     if (buttonEl) {
-      // 检查按钮是否在输入区域容器内（向上3层）
-      const inputArea = document.querySelector(siteConfig?.inputSelector || 'textarea');
-      if (inputArea) {
-        const inputContainer = inputArea.closest('div')?.parentElement;
-        if (inputContainer && inputContainer.contains(buttonEl)) {
-          detectUserSentQuestion('按钮点击(通用)');
-          return;
-        }
-      }
-
-      // 检查按钮是否紧邻输入框（兄弟元素）
       const textarea = document.querySelector('textarea, [contenteditable="true"]');
       if (textarea) {
         const parent = textarea.parentElement;
         if (parent && parent.contains(buttonEl)) {
-          detectUserSentQuestion('按钮点击(兄弟)');
+          detectUserSentQuestion('按钮点击(通用)');
           return;
+        }
+      }
+    }
+
+    // 3. 通用兜底：匹配 SVG 图标按钮（很多AI网站用SVG做发送图标）
+    const svgButton = target.closest('svg');
+    if (svgButton) {
+      const btnParent = svgButton.closest('button, [role="button"], [class*="send"]');
+      if (btnParent) {
+        const textarea = document.querySelector('textarea, [contenteditable="true"]');
+        if (textarea) {
+          const commonParent = textarea.parentElement;
+          if (commonParent && commonParent.contains(btnParent)) {
+            detectUserSentQuestion('SVG按钮');
+            return;
+          }
         }
       }
     }
@@ -129,7 +133,7 @@ function monitorEnterKey(): void {
   }, true);
 }
 
-/** 监听表单提交事件（部分 AI 网站使用 form submit） */
+/** 监听表单提交事件 */
 function monitorFormSubmit(): void {
   document.addEventListener('submit', () => {
     detectUserSentQuestion('表单提交');
@@ -138,19 +142,17 @@ function monitorFormSubmit(): void {
 
 /** 监听复制和粘贴事件 */
 function monitorCopyPaste(): void {
-  // 监听复制（用户从AI回复中复制内容）
   document.addEventListener('copy', () => {
     console.log('[EchoBreaker] 检测到复制操作');
     sendMessage('USER_PASTED');
   }, true);
-  // 监听粘贴（用户粘贴内容到输入框）
   document.addEventListener('paste', () => {
     console.log('[EchoBreaker] 检测到粘贴操作');
     sendMessage('USER_PASTED');
   }, true);
 }
 
-/** 监听页面可见性变化，区分活跃/后台 */
+/** 监听页面可见性变化 */
 function monitorVisibility(): void {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
@@ -191,33 +193,26 @@ function listenForAwakening(): void {
   });
 }
 
-/** 使用 requestIdleCallback 执行非紧急操作 */
-function scheduleIdleTask(task: () => void): void {
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(task);
-  } else {
-    setTimeout(task, 0);
-  }
-}
-
 /** 初始化 L0 监测层 */
-async function init(): Promise<void> {
-  await fetchSiteConfig();
+function init(): void {
+  // 关键：先立即注册所有事件监听器，不依赖任何异步操作
+  monitorSendButton();
+  monitorEnterKey();
+  monitorFormSubmit();
+  monitorCopyPaste();
+  monitorVisibility();
+  listenForAwakening();
 
-  scheduleIdleTask(() => {
-    monitorSendButton();
-    monitorEnterKey();
-    monitorFormSubmit();
-    monitorCopyPaste();
-    monitorVisibility();
-    listenForAwakening();
+  if (document.visibilityState === 'visible') {
+    startActiveReporting();
+  }
 
-    if (document.visibilityState === 'visible') {
-      startActiveReporting();
-    }
+  console.log('[EchoBreaker] L0 监测层已启动（事件监听已注册）');
+
+  // 异步获取网站配置（不阻塞监听注册）
+  fetchSiteConfig().then(() => {
+    console.log('[EchoBreaker] 网站配置加载完成');
   });
-
-  console.log('[EchoBreaker] L0 监测层已启动');
 }
 
 init();
