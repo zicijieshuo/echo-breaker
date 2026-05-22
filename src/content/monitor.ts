@@ -21,26 +21,15 @@ const SEND_DEBOUNCE_MS = 1000;
 /** 扩展上下文是否已失效 */
 let contextInvalidated = false;
 
-/** 检查扩展上下文是否仍然有效 */
-function isContextValid(): boolean {
-  if (contextInvalidated) return false;
-  try {
-    // 尝试访问 chrome.runtime.id，如果上下文失效会抛出异常
-    if (!chrome.runtime?.id) {
-      contextInvalidated = true;
-      return false;
-    }
-  } catch {
-    contextInvalidated = true;
-    return false;
-  }
-  return true;
-}
+/** 连续发送失败次数 */
+let consecutiveFailures = 0;
+
+/** 最大连续失败次数（超过后认为上下文失效） */
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 /** 向 background 发送消息的封装（带上下文失效检测） */
 function sendMessage(type: string, payload?: Record<string, unknown>): void {
-  if (!isContextValid()) {
-    // 上下文已失效，停止所有定时器
+  if (contextInvalidated) {
     stopActiveReporting();
     return;
   }
@@ -48,11 +37,26 @@ function sendMessage(type: string, payload?: Record<string, unknown>): void {
     chrome.runtime.sendMessage({ type, payload }, (response) => {
       if (chrome.runtime.lastError) {
         const errMsg = chrome.runtime.lastError.message || '';
-        if (errMsg.includes('Extension context invalidated') || errMsg.includes('message port closed')) {
-          console.warn('[EchoBreaker] 扩展上下文已失效，停止消息发送');
+        if (errMsg.includes('Extension context invalidated')) {
+          // 上下文彻底失效（扩展被卸载/禁用），不可恢复
+          console.warn('[EchoBreaker] 扩展上下文已失效（扩展可能被卸载），停止消息发送');
           contextInvalidated = true;
           stopActiveReporting();
+        } else if (errMsg.includes('message port closed')) {
+          // 消息端口关闭可能是临时问题（background 正在重启），允许重试
+          consecutiveFailures++;
+          console.warn(`[EchoBreaker] 消息端口关闭（第${consecutiveFailures}次），可能正在重连`);
+          if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+            console.warn('[EchoBreaker] 连续失败次数过多，停止消息发送');
+            contextInvalidated = true;
+            stopActiveReporting();
+          }
+        } else {
+          console.warn(`[EchoBreaker] 消息发送失败 (${type}):`, errMsg);
         }
+      } else {
+        // 成功发送，重置失败计数
+        consecutiveFailures = 0;
       }
     });
   } catch (err) {
@@ -201,9 +205,14 @@ function monitorVisibility(): void {
 /** 启动活跃状态定时上报 */
 function startActiveReporting(): void {
   if (activeReportTimer) return;
-  sendMessage('USER_ACTIVE');
+  // 延迟5秒后开始上报，等待 background 完全启动
+  setTimeout(() => {
+    if (!contextInvalidated && isActive) {
+      sendMessage('USER_ACTIVE');
+    }
+  }, 5000);
   activeReportTimer = setInterval(() => {
-    if (isActive) {
+    if (!contextInvalidated && isActive) {
       sendMessage('USER_ACTIVE');
     }
   }, ACTIVE_REPORT_INTERVAL);
