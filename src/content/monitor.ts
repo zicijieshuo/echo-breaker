@@ -84,8 +84,35 @@ function isInputElement(el: HTMLElement): boolean {
 function monitorSendButton(): void {
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
-    if (matchesSendButton(target)) {
+
+    // 优先匹配配置的选择器
+    if (siteConfig?.sendButtonSelector && matchesAnySelector(target, siteConfig.sendButtonSelector)) {
       detectUserSentQuestion('按钮点击');
+      return;
+    }
+
+    // 通用兜底：匹配 role="button" 且在输入区域附近的元素
+    const buttonEl = target.closest('[role="button"]');
+    if (buttonEl) {
+      // 检查按钮是否在输入区域容器内（向上3层）
+      const inputArea = document.querySelector(siteConfig?.inputSelector || 'textarea');
+      if (inputArea) {
+        const inputContainer = inputArea.closest('div')?.parentElement;
+        if (inputContainer && inputContainer.contains(buttonEl)) {
+          detectUserSentQuestion('按钮点击(通用)');
+          return;
+        }
+      }
+
+      // 检查按钮是否紧邻输入框（兄弟元素）
+      const textarea = document.querySelector('textarea, [contenteditable="true"]');
+      if (textarea) {
+        const parent = textarea.parentElement;
+        if (parent && parent.contains(buttonEl)) {
+          detectUserSentQuestion('按钮点击(兄弟)');
+          return;
+        }
+      }
     }
   }, true);
 }

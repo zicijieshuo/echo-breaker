@@ -2,8 +2,8 @@
   {
     "domain": "deepseek.com",
     "name": "DeepSeek",
-    "inputSelector": "textarea, [contenteditable='true']",
-    "sendButtonSelector": "[aria-label='Send'], button[class*='send'], div[class*='send']",
+    "inputSelector": "textarea[placeholder='Message DeepSeek'], textarea, [contenteditable='true']",
+    "sendButtonSelector": "div[role='button'][aria-disabled='false'], [aria-label='Send'], div[class*='f38813a'] div[role='button']",
     "responseSelector": ".markdown-body, .ds-markdown"
   },
   {
