@@ -284,6 +284,7 @@ async function updateStatusIndicator(): Promise<void> {
 async function updateDashboard(): Promise<void> {
   try {
     const todayData: any = await chrome.runtime.sendMessage({ type: 'GET_TODAY_DATA' });
+    console.log('[EchoBreaker Popup] 今日数据:', JSON.stringify(todayData));
 
     const durationEl = document.getElementById('today-duration');
     const roundsEl = document.getElementById('today-rounds');
@@ -294,6 +295,7 @@ async function updateDashboard(): Promise<void> {
     if (copiesEl) copiesEl.textContent = String(todayData?.copy_paste_count || 0);
 
     const weeklyData: any = await chrome.runtime.sendMessage({ type: 'GET_WEEKLY_DATA' });
+    console.log('[EchoBreaker Popup] 周数据:', JSON.stringify(weeklyData));
 
     const dates = weeklyData?.dates || getRecentDays(7);
     const weekMinutes = (weeklyData?.records || []).map(
@@ -309,7 +311,9 @@ async function updateDashboard(): Promise<void> {
     );
     initRatioChart(totalQuestions, totalCopies);
 
-    const hourlyMinutes = weeklyData?.hourly || new Array(24).fill(0);
+    const hourlyMinutes = (weeklyData?.hourly || new Array(24).fill(0)).map(
+      (s: number) => Math.round(s / 60)
+    );
     initHourlyChart(hourlyMinutes);
 
     await updateStatusIndicator();
@@ -419,6 +423,7 @@ async function init(): Promise<void> {
   document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);
   document.getElementById('clear-btn')?.addEventListener('click', clearTodayData);
   document.getElementById('export-btn')?.addEventListener('click', exportLogs);
+  document.getElementById('refresh-btn')?.addEventListener('click', updateDashboard);
 
   refreshTimer = setInterval(updateDashboard, 30000);
 }

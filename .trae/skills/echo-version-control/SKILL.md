@@ -1,11 +1,50 @@
 ---
 name: "echo-version-control"
-description: "Manages version control, CLAUDE document updates, and GitHub push for the Echo Breaker project. MUST invoke after every task completion to record changes and push to GitHub."
+description: "Manages version control, branching strategy, CLAUDE document updates, and GitHub push for the Echo Breaker project. MUST invoke after every task completion to record changes and push to GitHub."
 ---
 
 # Echo Breaker Version Control
 
 This skill enforces the version control workflow for the "回声破除者" (Echo Breaker) project. It MUST be invoked after every task completion.
+
+## Branching Strategy (Git Flow)
+
+The project uses a **Git Flow** branching model to separate stable releases from development work:
+
+### Branch Types
+
+| Branch | Purpose | Naming | Protection |
+|--------|---------|--------|------------|
+| `main` | 正式发布版本，只接受 merge | `main` | 受保护，只能通过 PR 合入 |
+| `develop` | 开发主分支，日常开发在此进行 | `develop` | 受保护，只能通过 PR 合入 |
+| `feature/*` | 新功能开发 | `feature/L1-awakening` | 从 develop 创建，完成后合回 develop |
+| `fix/*` | Bug 修复 | `fix/popup-chart-data` | 从 develop 创建，完成后合回 develop |
+| `release/*` | 发布准备分支 | `release/v1.0.0` | 从 develop 创建，测试通过后合入 main + develop |
+| `hotfix/*` | 紧急线上修复 | `hotfix/v1.0.1` | 从 main 创建，修复后合入 main + develop |
+
+### Branch Workflow
+
+```
+main ──────────────────────────── merge ──── v1.0.0 tag
+  \                                /
+   └── develop ──── release/v1.0.0 ┘
+         \      \
+          \      feature/L2-delay-satisfy
+           \
+            fix/popup-chart-data
+```
+
+### Rules
+
+1. **`main` 分支**：只存放正式发布版本，每次合入必须打 tag（如 `v1.0.0`）
+2. **`develop` 分支**：日常开发基础分支，所有 feature/fix 分支从此创建
+3. **新功能开发**：从 develop 创建 `feature/*` 分支，完成后 PR 回 develop
+4. **Bug 修复**：从 develop 创建 `fix/*` 分支，完成后 PR 回 develop
+5. **发布流程**：
+   - 从 develop 创建 `release/vX.Y.Z` 分支
+   - 在 release 分支上做最终测试和版本号更新
+   - 测试通过后，将 release 合入 `main`（打 tag）和 `develop`
+6. **紧急修复**：从 main 创建 `hotfix/*`，修复后合入 main（打 tag）和 develop
 
 ## Mandatory Steps (After Every Task)
 
@@ -58,13 +97,20 @@ Stage and commit all changes with a descriptive commit message following Convent
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`
 Scopes: `L0`, `L1`, `L2`, `L3`, `L4`, `L5`, `L6`, `background`, `popup`, `sidepanel`, `lib`, `config`, `data`
 
-### Step 4: Push to GitHub
+### Step 4: Determine Branch and Push
 
-After committing, push to the remote repository:
+Based on the nature of the change:
+
+- **Bug fix / Testing**: Work on `fix/*` or `develop` branch, push to that branch
+- **New feature**: Work on `feature/*` branch, push to that branch
+- **Official release**: Merge to `main`, tag with version, push main + tag
 
 ```bash
 cd "c:\Users\JiYueHu\Desktop\回声破除者\程序主体\代码仓库"
-git push origin master
+# Push to the appropriate branch
+git push origin <branch-name>
+# If releasing, also push the tag
+git push origin v1.0.0
 ```
 
 ### Step 5: Verify
@@ -81,7 +127,7 @@ The CLAUDE document serves as the project's changelog. Every version entry must 
 
 ## Current Version
 
-Starting from: v0.1.0 (initial project scaffold)
+Starting from: v1.0.0 (first official release)
 
 ## Important Rules
 
@@ -90,3 +136,5 @@ Starting from: v0.1.0 (initial project scaffold)
 3. ALWAYS increment the version number
 4. ALWAYS use descriptive commit messages
 5. The CLAUDE document is the single source of truth for project history
+6. ALWAYS follow the branching strategy — bug fixes and features go to develop, official releases go to main
+7. ALWAYS tag main branch with version number on releases

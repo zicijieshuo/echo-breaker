@@ -3,6 +3,7 @@
 import { THRESHOLDS, STORAGE_KEYS, ALARM_NAMES } from '../lib/constants';
 import type { AIWebsite, DailyRecord, TriggerType } from '../lib/types';
 import {
+  getUsageData,
   getTodayRecord,
   addDuration,
   addActiveDuration,
@@ -232,8 +233,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     case 'GET_WEEKLY_DATA': {
-      // 返回最近7天数据
-      getWeeklyData().then(sendResponse);
+      // 返回最近7天数据（格式化供 Popup 使用）
+      handleGetWeeklyData().then(sendResponse);
       return true; // 异步响应
     }
 
@@ -299,6 +300,33 @@ async function handleTriggerPaused(): Promise<void> {
   chrome.alarms.create(ALARM_NAMES.PAUSE_REMIND, {
     delayInMinutes: THRESHOLDS.PAUSE_REMIND_DELAY,
   });
+}
+
+/** 处理获取周数据请求（格式化供 Popup 使用） */
+async function handleGetWeeklyData(): Promise<{ dates: string[]; records: any[]; hourly: number[] }> {
+  const data = await getUsageData();
+  const now = new Date();
+  const dates: string[] = [];
+  const records: any[] = [];
+  const hourly = new Array(24).fill(0);
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    const key = date.toISOString().split('T')[0];
+    dates.push(key);
+    const record = data[key] || null;
+    records.push(record);
+
+    // 合并所有天的 hourly_data
+    if (record?.hourly_data) {
+      for (let h = 0; h < 24; h++) {
+        hourly[h] += record.hourly_data[h] || 0;
+      }
+    }
+  }
+
+  return { dates, records, hourly };
 }
 
 /** 处理查询当前标签页是否为 AI 网站 */
