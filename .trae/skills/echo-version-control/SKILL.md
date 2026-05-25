@@ -83,6 +83,23 @@ Add a new section with the following format:
 
 Before committing, update the `version` field in `package.json` to match the new version number.
 
+### Step 2.5: Update README.md (正式版发布时必须)
+
+When releasing an **official version** (合并到 main 分支时), you MUST also update `README.md`:
+
+1. **版本历史区域**：在"版本历史"章节顶部添加新版本条目，格式：
+   ```markdown
+   ### vX.Y.Z (YYYY-MM-DD)
+   - 变更1
+   - 变更2
+   ```
+2. **功能概览**：如有新功能模块，更新"功能概览"章节
+3. **会员体系表格**：如会员权益有变更，更新"会员体系"章节
+4. **项目结构**：如目录结构有变化，更新"项目结构"章节
+5. **技术栈**：如依赖有变化，更新"技术栈"章节
+
+注意：测试版（beta/alpha）发布时不需要更新 README，仅在正式版合入 main 时更新。
+
 ### Step 3: Git Commit
 
 Stage and commit all changes with a descriptive commit message following Conventional Commits format:
@@ -138,3 +155,4 @@ Starting from: v1.0.0 (first official release)
 5. The CLAUDE document is the single source of truth for project history
 6. ALWAYS follow the branching strategy — bug fixes and features go to develop, official releases go to main
 7. ALWAYS tag main branch with version number on releases
+8. ALWAYS update README.md when releasing an official version (merging to main)
