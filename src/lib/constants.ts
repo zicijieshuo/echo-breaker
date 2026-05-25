@@ -43,8 +43,8 @@ export const STORAGE_KEYS = {
 /** LLM 供应商默认配置 */
 export const LLM_PROVIDER_DEFAULTS: Record<string, { baseUrl: string; model: string }> = {
   deepseek: {
-    baseUrl: 'https://api.deepseek.com/v1',
-    model: 'deepseek-chat',
+    baseUrl: 'https://api.deepseek.com',
+    model: 'deepseek-v4-flash',
   },
   zhipu: {
     baseUrl: 'https://open.bigmodel.cn/api/paas/v4',

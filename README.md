@@ -75,7 +75,7 @@ L2/L3/L4 层级功能需要大模型 API 支持。在扩展设置页面配置：
 支持的供应商：
 | 供应商 | 默认模型 | API 地址 |
 |--------|----------|----------|
-| DeepSeek | deepseek-chat | https://api.deepseek.com/v1 |
+| DeepSeek | deepseek-v4-flash | https://api.deepseek.com |
 | 智谱 GLM | glm-4-flash | https://open.bigmodel.cn/api/paas/v4 |
 | 通义千问 | qwen-turbo | https://dashscope.aliyuncs.com/compatible-mode/v1 |
 | 自定义 | 用户指定 | 用户指定 |
