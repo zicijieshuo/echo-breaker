@@ -188,7 +188,7 @@ function createProgressRing(button: HTMLElement): SVGSVGElement {
   bgCircle.setAttribute('cy', String(center));
   bgCircle.setAttribute('r', String(radius));
   bgCircle.setAttribute('fill', 'none');
-  bgCircle.setAttribute('stroke', 'rgba(99, 102, 241, 0.2)');
+  bgCircle.setAttribute('stroke', 'rgba(58, 124, 195, 0.2)');
   bgCircle.setAttribute('stroke-width', '3');
 
   // 进度圆环
@@ -197,7 +197,7 @@ function createProgressRing(button: HTMLElement): SVGSVGElement {
   progressCircle.setAttribute('cy', String(center));
   progressCircle.setAttribute('r', String(radius));
   progressCircle.setAttribute('fill', 'none');
-  progressCircle.setAttribute('stroke', '#6366f1');
+  progressCircle.setAttribute('stroke', '#3a7cc3');
   progressCircle.setAttribute('stroke-width', '3');
   progressCircle.setAttribute('stroke-linecap', 'round');
   progressCircle.setAttribute('stroke-dasharray', String(circumference));
@@ -225,7 +225,7 @@ function updateProgress(elapsed: number): void {
 
   // 接近完成时变色
   if (progress > 0.8) {
-    circle.setAttribute('stroke', '#818cf8');
+    circle.setAttribute('stroke', '#5b9bd5');
   }
 }
 
@@ -252,8 +252,8 @@ function addPulseEffect(button: HTMLElement): void {
     if (!currentLongPressButton) return;
     pulsePhase = !pulsePhase;
     button.style.boxShadow = pulsePhase
-      ? '0 0 16px rgba(99, 102, 241, 0.7), 0 0 32px rgba(99, 102, 241, 0.3)'
-      : '0 0 8px rgba(99, 102, 241, 0.4)';
+      ? '0 0 16px rgba(58, 124, 195, 0.7), 0 0 32px rgba(58, 124, 195, 0.3)'
+      : '0 0 8px rgba(58, 124, 195, 0.4)';
     button.style.transform = pulsePhase ? 'scale(1.05)' : 'scale(1)';
   }
 
@@ -344,16 +344,16 @@ function injectStyles(): void {
       50% { opacity: 1; transform: translateX(-50%) scale(1.02); }
     }
     @keyframes echoGuidedPulse {
-      0%, 100% { box-shadow: 0 0 8px rgba(99, 102, 241, 0.4); }
-      50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 40px rgba(99, 102, 241, 0.3); }
+      0%, 100% { box-shadow: 0 0 8px rgba(58, 124, 195, 0.4); }
+      50% { box-shadow: 0 0 20px rgba(58, 124, 195, 0.8), 0 0 40px rgba(58, 124, 195, 0.3); }
     }
     .echo-breaker-guided-btn {
       animation: echoGuidedPulse 2s ease-in-out infinite !important;
-      background: #6366f1 !important;
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5) !important;
+      background: #3a7cc3 !important;
+      box-shadow: 0 0 12px rgba(58, 124, 195, 0.5) !important;
     }
     #echo-breaker-guided-close:hover {
-      background: rgba(255, 255, 255, 0.2) !important;
+      background: #dce6f0 !important;
     }
   `;
   document.head.appendChild(style);
@@ -373,13 +373,13 @@ function enterGuidedMode(): void {
     left: 50%;
     transform: translateX(-50%);
     z-index: 2147483646;
-    background: rgba(99, 102, 241, 0.9);
+    background: rgba(58, 124, 195, 0.9);
     color: white;
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 13px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 12px rgba(58, 124, 195, 0.4);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -403,7 +403,7 @@ function enterGuidedMode(): void {
     font-size: 12px;
     line-height: 1;
     transition: background 0.2s;
-    background: rgba(255, 255, 255, 0.1);
+    background: #dce6f0;
   `;
   closeBtn.textContent = '✕';
   closeBtn.addEventListener('click', () => {
@@ -600,6 +600,13 @@ function listenForBackgroundMessages(): void {
       if (prompt) {
         cachedLLMPrompt = prompt;
         console.log('[EchoBreaker-L2] 收到 LLM 生成的引导 Prompt');
+      }
+    }
+    if (message.type === 'TOGGLE_GUIDED_MODE') {
+      if (isGuidedMode) {
+        exitGuidedMode();
+      } else {
+        enterGuidedMode();
       }
     }
   });

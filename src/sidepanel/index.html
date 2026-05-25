@@ -5,71 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>思考日志</title>
 </head>
-<body style="margin:0;padding:0;background:#1e1b4b;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.6;overflow-y:auto;height:100vh;box-sizing:border-box;">
+<body style="margin:0;padding:0;background:#f0f5fa;color:#2c3e50;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.6;overflow-y:auto;height:100vh;box-sizing:border-box;">
 
   <!-- Header -->
-  <header style="padding:20px 16px 12px;border-bottom:1px solid rgba(129,140,248,0.2);">
-    <h1 style="margin:0;font-size:20px;color:#818cf8;font-weight:700;">📝 思考日志</h1>
-    <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">在获取AI答案前，先写下你的想法</p>
+  <header style="padding:20px 16px 12px;border-bottom:1px solid #dce6f0;background:#ffffff;">
+    <h1 style="margin:0;font-size:20px;color:#5b9bd5;font-weight:700;">📝 思考日志</h1>
+    <p style="margin:4px 0 0;font-size:12px;color:#7f8c9b;">在获取AI答案前，先写下你的想法</p>
   </header>
 
   <!-- Current Question Section -->
-  <section id="question-section" style="padding:16px;border-bottom:1px solid rgba(129,140,248,0.1);">
-    <h2 style="margin:0 0 8px;font-size:13px;color:#818cf8;font-weight:600;">🔍 当前问题</h2>
-    <div id="question-display" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;font-size:13px;color:#cbd5e1;min-height:40px;border:1px solid rgba(255,255,255,0.08);">
+  <section id="question-section" style="padding:16px;border-bottom:1px solid #dce6f0;background:#ffffff;">
+    <h2 style="margin:0 0 8px;font-size:13px;color:#5b9bd5;font-weight:600;">🔍 当前问题</h2>
+    <div id="question-display" style="background:#f7fafd;border-radius:8px;padding:12px;font-size:13px;color:#2c3e50;min-height:40px;border:1px solid #dce6f0;">
       <span id="question-text" style="display:none;"></span>
-      <span id="question-placeholder" style="color:#64748b;font-style:italic;">向AI提问后，问题会显示在这里...</span>
+      <span id="question-placeholder" style="color:#7f8c9b;font-style:italic;">向AI提问后，问题会显示在这里...</span>
     </div>
   </section>
 
   <!-- My First Thought Section -->
-  <section id="thought-section" style="padding:16px;border-bottom:1px solid rgba(129,140,248,0.1);">
-    <h2 style="margin:0 0 8px;font-size:13px;color:#f59e0b;font-weight:600;">💭 我的第一步想法</h2>
+  <section id="thought-section" style="padding:16px;border-bottom:1px solid #dce6f0;background:#ffffff;">
+    <h2 style="margin:0 0 8px;font-size:13px;color:#e8a838;font-weight:600;">💭 我的第一步想法</h2>
 
-    <div id="thought-reminder" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#fbbf24;">
+    <div id="thought-reminder" style="background:rgba(232,168,56,0.08);border:1px solid rgba(232,168,56,0.25);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#e8a838;">
       💡 先写下你的想法，再去看AI的答案
     </div>
 
-    <label style="display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;">我的第一步想法</label>
+    <label style="display:block;font-size:12px;color:#7f8c9b;margin-bottom:6px;">我的第一步想法</label>
     <textarea
       id="myThought"
-      style="width:100%;height:100px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:13px;color:#e2e8f0;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box;"
+      style="width:100%;height:100px;background:#f7fafd;border:1px solid #dce6f0;border-radius:8px;padding:10px;font-size:13px;color:#2c3e50;resize:vertical;outline:none;font-family:inherit;box-sizing:border-box;"
       placeholder="先想想你会怎么回答这个问题..."
     ></textarea>
 
-    <label style="display:block;font-size:12px;color:#94a3b8;margin:12px 0 6px;">我预期的关键点</label>
+    <label style="display:block;font-size:12px;color:#7f8c9b;margin:12px 0 6px;">我预期的关键点</label>
     <input
       id="keyPoints"
       type="text"
-      style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:13px;color:#e2e8f0;outline:none;font-family:inherit;box-sizing:border-box;"
+      style="width:100%;background:#f7fafd;border:1px solid #dce6f0;border-radius:8px;padding:10px;font-size:13px;color:#2c3e50;outline:none;font-family:inherit;box-sizing:border-box;"
       placeholder="用逗号分隔，如：效率、成本、用户体验"
     />
 
     <button
       id="save-thought-btn"
-      style="width:100%;margin-top:14px;padding:10px;background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;"
+      style="width:100%;margin-top:14px;padding:10px;background:linear-gradient(135deg,#5b9bd5,#3a7cc3);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;"
     >
       保存想法
     </button>
 
-    <div id="save-success" style="display:none;margin-top:8px;font-size:12px;color:#34d399;text-align:center;">✅ 想法已保存</div>
+    <div id="save-success" style="display:none;margin-top:8px;font-size:12px;color:#4caf7d;text-align:center;">✅ 想法已保存</div>
   </section>
 
   <!-- Bias Analysis Section -->
-  <section id="analysis-section" style="padding:16px;border-bottom:1px solid rgba(129,140,248,0.1);display:none;">
-    <h2 style="margin:0 0 8px;font-size:13px;color:#818cf8;font-weight:600;">📊 思维偏差分析</h2>
+  <section id="analysis-section" style="padding:16px;border-bottom:1px solid #dce6f0;background:#ffffff;display:none;">
+    <h2 style="margin:0 0 8px;font-size:13px;color:#5b9bd5;font-weight:600;">📊 思维偏差分析</h2>
 
     <button
       id="request-analysis-btn"
-      style="width:100%;padding:10px;background:rgba(129,140,248,0.15);color:#818cf8;border:1px solid rgba(129,140,248,0.3);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;"
+      style="width:100%;padding:10px;background:rgba(91,155,213,0.08);color:#5b9bd5;border:1px solid rgba(91,155,213,0.3);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;"
     >
       请求偏差分析
     </button>
 
     <!-- Loading State -->
     <div id="analysis-loading" style="display:none;margin-top:12px;text-align:center;padding:20px;">
-      <div style="display:inline-block;width:24px;height:24px;border:3px solid rgba(129,140,248,0.2);border-top-color:#818cf8;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-      <p style="margin:8px 0 0;font-size:12px;color:#94a3b8;">正在分析你的思维偏差...</p>
+      <div style="display:inline-block;width:24px;height:24px;border:3px solid rgba(91,155,213,0.2);border-top-color:#5b9bd5;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <p style="margin:8px 0 0;font-size:12px;color:#7f8c9b;">正在分析你的思维偏差...</p>
     </div>
 
     <!-- Analysis Result -->
@@ -77,39 +77,39 @@
       <!-- Overall Score -->
       <div style="text-align:center;margin-bottom:14px;">
         <div id="score-circle" style="display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;font-size:24px;font-weight:700;border:3px solid;"></div>
-        <p style="margin:6px 0 0;font-size:11px;color:#94a3b8;">思维独立指数</p>
+        <p style="margin:6px 0 0;font-size:11px;color:#7f8c9b;">思维独立指数</p>
       </div>
 
       <!-- Missing Dimensions -->
       <div id="missing-dimensions" style="margin-bottom:12px;">
-        <h3 style="margin:0 0 6px;font-size:12px;color:#f87171;font-weight:600;">❌ 缺失维度</h3>
+        <h3 style="margin:0 0 6px;font-size:12px;color:#e05555;font-weight:600;">❌ 缺失维度</h3>
         <ul id="missing-list" style="margin:0;padding:0 0 0 16px;list-style:none;"></ul>
       </div>
 
       <!-- Strength Areas -->
       <div id="strength-areas" style="margin-bottom:12px;">
-        <h3 style="margin:0 0 6px;font-size:12px;color:#34d399;font-weight:600;">✅ 亮点</h3>
+        <h3 style="margin:0 0 6px;font-size:12px;color:#4caf7d;font-weight:600;">✅ 亮点</h3>
         <ul id="strength-list" style="margin:0;padding:0 0 0 16px;list-style:none;"></ul>
       </div>
 
       <!-- Suggestions -->
       <div id="suggestions" style="margin-bottom:4px;">
-        <h3 style="margin:0 0 6px;font-size:12px;color:#60a5fa;font-weight:600;">💡 建议</h3>
+        <h3 style="margin:0 0 6px;font-size:12px;color:#5b9bd5;font-weight:600;">💡 建议</h3>
         <ul id="suggestion-list" style="margin:0;padding:0 0 0 16px;list-style:none;"></ul>
       </div>
     </div>
   </section>
 
   <!-- History Section -->
-  <section id="history-section" style="padding:16px;">
-    <h2 style="margin:0 0 10px;font-size:13px;color:#818cf8;font-weight:600;">📋 历史记录</h2>
+  <section id="history-section" style="padding:16px;background:#ffffff;">
+    <h2 style="margin:0 0 10px;font-size:13px;color:#5b9bd5;font-weight:600;">📋 历史记录</h2>
     <div id="history-list">
-      <p id="history-empty" style="margin:0;font-size:12px;color:#64748b;font-style:italic;">暂无历史记录</p>
+      <p id="history-empty" style="margin:0;font-size:12px;color:#7f8c9b;font-style:italic;">暂无历史记录</p>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer style="padding:16px;text-align:center;font-size:11px;color:#475569;border-top:1px solid rgba(129,140,248,0.1);">
+  <footer style="padding:16px;text-align:center;font-size:11px;color:#7f8c9b;border-top:1px solid #dce6f0;">
     L3 元认知外显层 · 回声破除者
   </footer>
 
@@ -118,13 +118,14 @@
       to { transform: rotate(360deg); }
     }
     textarea:focus, input:focus {
-      border-color: #818cf8 !important;
+      border-color: #5b9bd5 !important;
+      box-shadow: 0 0 0 2px rgba(91,155,213,0.15);
     }
     #save-thought-btn:hover {
       opacity: 0.85;
     }
     #request-analysis-btn:hover {
-      background: rgba(129,140,248,0.25);
+      background: rgba(91,155,213,0.15);
     }
   </style>
 

@@ -5,206 +5,206 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>回声破除者 - 设置</title>
   <style>
-    input:focus, select:focus { border-color: #818cf8 !important; }
-    .test-btn:hover { background: rgba(129,140,248,0.25) !important; }
-    .save-btn:hover { background: rgba(129,140,248,0.35) !important; }
-    .delete-btn:hover { background: rgba(239,68,68,0.2) !important; }
-    #activate-license-btn:hover { background: rgba(245,158,11,0.25) !important; }
+    input:focus, select:focus { border-color: #5b9bd5 !important; }
+    .test-btn:hover { background: rgba(91,155,213,0.2) !important; }
+    .save-btn:hover { background: rgba(91,155,213,0.25) !important; }
+    .delete-btn:hover { background: rgba(224,85,85,0.15) !important; }
+    #activate-license-btn:hover { background: rgba(232,168,56,0.2) !important; }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #1e1b4b; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; min-height: 100vh;">
+<body style="margin: 0; padding: 0; background-color: #f0f5fa; color: #2c3e50; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; min-height: 100vh;">
   <div style="max-width: 800px; margin: 0 auto; padding: 32px 24px;">
 
     <!-- 页面标题 -->
-    <header style="margin-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;">
-      <h1 style="font-size: 28px; font-weight: bold; color: #818cf8; margin: 0 0 4px 0;">🧠 回声破除者</h1>
-      <p style="font-size: 14px; color: #9ca3af; margin: 0;">设置与配置</p>
+    <header style="margin-bottom: 32px; border-bottom: 1px solid #dce6f0; padding-bottom: 16px;">
+      <h1 style="font-size: 28px; font-weight: bold; color: #5b9bd5; margin: 0 0 4px 0;">🧠 回声破除者</h1>
+      <p style="font-size: 14px; color: #7f8c9b; margin: 0;">设置与配置</p>
     </header>
 
     <!-- ==================== 1. API Key 管理 ==================== -->
     <section style="margin-bottom: 36px;">
-      <h2 style="font-size: 18px; font-weight: 600; color: #f59e0b; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-        <span style="width: 4px; height: 20px; background: #f59e0b; border-radius: 2px; display: inline-block;"></span>
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
         API Key 管理
       </h2>
 
       <!-- DeepSeek -->
-      <div class="provider-card" data-provider="deepseek" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
+      <div class="provider-card" data-provider="deepseek" style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <h3 style="font-size: 15px; font-weight: 600; color: #818cf8; margin: 0;">DeepSeek</h3>
+          <h3 style="font-size: 15px; font-weight: 600; color: #5b9bd5; margin: 0;">DeepSeek</h3>
           <span class="connection-status" data-provider="deepseek" style="font-size: 13px; display: none;"></span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">API Key</label>
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">API Key</label>
             <div style="position: relative;">
-              <input type="password" class="api-key-input" data-provider="deepseek" placeholder="sk-..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 36px 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
-              <button class="toggle-key-btn" data-provider="deepseek" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
+              <input type="password" class="api-key-input" data-provider="deepseek" placeholder="sk-..." style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 36px 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+              <button class="toggle-key-btn" data-provider="deepseek" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f8c9b; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
             </div>
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Base URL</label>
-            <input type="text" class="base-url-input" data-provider="deepseek" value="https://api.deepseek.com" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">Base URL</label>
+            <input type="text" class="base-url-input" data-provider="deepseek" value="https://api.deepseek.com" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
           </div>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">模型</label>
-          <input type="text" class="model-input" data-provider="deepseek" value="deepseek-v4-flash" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">模型</label>
+          <input type="text" class="model-input" data-provider="deepseek" value="deepseek-v4-flash" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="test-btn" data-provider="deepseek" style="background: rgba(129,140,248,0.15); color: #818cf8; border: 1px solid rgba(129,140,248,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
-          <button class="save-btn" data-provider="deepseek" style="background: rgba(129,140,248,0.2); color: #818cf8; border: 1px solid rgba(129,140,248,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
-          <button class="delete-btn" data-provider="deepseek" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
+          <button class="test-btn" data-provider="deepseek" style="background: rgba(91,155,213,0.1); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
+          <button class="save-btn" data-provider="deepseek" style="background: rgba(91,155,213,0.15); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
+          <button class="delete-btn" data-provider="deepseek" style="background: rgba(224,85,85,0.08); color: #e05555; border: 1px solid rgba(224,85,85,0.25); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
         </div>
       </div>
 
       <!-- 智谱GLM -->
-      <div class="provider-card" data-provider="zhipu" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
+      <div class="provider-card" data-provider="zhipu" style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <h3 style="font-size: 15px; font-weight: 600; color: #818cf8; margin: 0;">智谱 GLM</h3>
+          <h3 style="font-size: 15px; font-weight: 600; color: #5b9bd5; margin: 0;">智谱 GLM</h3>
           <span class="connection-status" data-provider="zhipu" style="font-size: 13px; display: none;"></span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">API Key</label>
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">API Key</label>
             <div style="position: relative;">
-              <input type="password" class="api-key-input" data-provider="zhipu" placeholder="your-api-key..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 36px 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
-              <button class="toggle-key-btn" data-provider="zhipu" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
+              <input type="password" class="api-key-input" data-provider="zhipu" placeholder="your-api-key..." style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 36px 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+              <button class="toggle-key-btn" data-provider="zhipu" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f8c9b; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
             </div>
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Base URL</label>
-            <input type="text" class="base-url-input" data-provider="zhipu" value="https://open.bigmodel.cn/api/paas/v4" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">Base URL</label>
+            <input type="text" class="base-url-input" data-provider="zhipu" value="https://open.bigmodel.cn/api/paas/v4" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
           </div>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">模型</label>
-          <input type="text" class="model-input" data-provider="zhipu" value="glm-4-flash" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">模型</label>
+          <input type="text" class="model-input" data-provider="zhipu" value="glm-4-flash" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="test-btn" data-provider="zhipu" style="background: rgba(129,140,248,0.15); color: #818cf8; border: 1px solid rgba(129,140,248,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
-          <button class="save-btn" data-provider="zhipu" style="background: rgba(129,140,248,0.2); color: #818cf8; border: 1px solid rgba(129,140,248,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
-          <button class="delete-btn" data-provider="zhipu" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
+          <button class="test-btn" data-provider="zhipu" style="background: rgba(91,155,213,0.1); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
+          <button class="save-btn" data-provider="zhipu" style="background: rgba(91,155,213,0.15); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
+          <button class="delete-btn" data-provider="zhipu" style="background: rgba(224,85,85,0.08); color: #e05555; border: 1px solid rgba(224,85,85,0.25); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
         </div>
       </div>
 
       <!-- 通义千问 -->
-      <div class="provider-card" data-provider="qwen" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
+      <div class="provider-card" data-provider="qwen" style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px; margin-bottom: 12px;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <h3 style="font-size: 15px; font-weight: 600; color: #818cf8; margin: 0;">通义千问</h3>
+          <h3 style="font-size: 15px; font-weight: 600; color: #5b9bd5; margin: 0;">通义千问</h3>
           <span class="connection-status" data-provider="qwen" style="font-size: 13px; display: none;"></span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">API Key</label>
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">API Key</label>
             <div style="position: relative;">
-              <input type="password" class="api-key-input" data-provider="qwen" placeholder="sk-..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 36px 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
-              <button class="toggle-key-btn" data-provider="qwen" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
+              <input type="password" class="api-key-input" data-provider="qwen" placeholder="sk-..." style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 36px 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+              <button class="toggle-key-btn" data-provider="qwen" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f8c9b; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
             </div>
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Base URL</label>
-            <input type="text" class="base-url-input" data-provider="qwen" value="https://dashscope.aliyuncs.com/compatible-mode/v1" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">Base URL</label>
+            <input type="text" class="base-url-input" data-provider="qwen" value="https://dashscope.aliyuncs.com/compatible-mode/v1" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
           </div>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">模型</label>
-          <input type="text" class="model-input" data-provider="qwen" value="qwen-turbo" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">模型</label>
+          <input type="text" class="model-input" data-provider="qwen" value="qwen-turbo" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="test-btn" data-provider="qwen" style="background: rgba(129,140,248,0.15); color: #818cf8; border: 1px solid rgba(129,140,248,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
-          <button class="save-btn" data-provider="qwen" style="background: rgba(129,140,248,0.2); color: #818cf8; border: 1px solid rgba(129,140,248,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
-          <button class="delete-btn" data-provider="qwen" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
+          <button class="test-btn" data-provider="qwen" style="background: rgba(91,155,213,0.1); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
+          <button class="save-btn" data-provider="qwen" style="background: rgba(91,155,213,0.15); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
+          <button class="delete-btn" data-provider="qwen" style="background: rgba(224,85,85,0.08); color: #e05555; border: 1px solid rgba(224,85,85,0.25); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
         </div>
       </div>
 
       <!-- 自定义 OpenAI 兼容 API -->
-      <div class="provider-card" data-provider="custom" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 0;">
+      <div class="provider-card" data-provider="custom" style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px; margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <h3 style="font-size: 15px; font-weight: 600; color: #818cf8; margin: 0;">自定义 OpenAI 兼容 API</h3>
+          <h3 style="font-size: 15px; font-weight: 600; color: #5b9bd5; margin: 0;">自定义 OpenAI 兼容 API</h3>
           <span class="connection-status" data-provider="custom" style="font-size: 13px; display: none;"></span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">API Key</label>
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">API Key</label>
             <div style="position: relative;">
-              <input type="password" class="api-key-input" data-provider="custom" placeholder="your-api-key..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 36px 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
-              <button class="toggle-key-btn" data-provider="custom" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
+              <input type="password" class="api-key-input" data-provider="custom" placeholder="your-api-key..." style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 36px 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+              <button class="toggle-key-btn" data-provider="custom" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f8c9b; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;" title="显示/隐藏">👁</button>
             </div>
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Base URL</label>
-            <input type="text" class="base-url-input" data-provider="custom" placeholder="https://your-api.com/v1" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">Base URL</label>
+            <input type="text" class="base-url-input" data-provider="custom" placeholder="https://your-api.com/v1" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
           </div>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">模型</label>
-          <input type="text" class="model-input" data-provider="custom" placeholder="gpt-3.5-turbo" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 4px;">模型</label>
+          <input type="text" class="model-input" data-provider="custom" placeholder="gpt-3.5-turbo" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="test-btn" data-provider="custom" style="background: rgba(129,140,248,0.15); color: #818cf8; border: 1px solid rgba(129,140,248,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
-          <button class="save-btn" data-provider="custom" style="background: rgba(129,140,248,0.2); color: #818cf8; border: 1px solid rgba(129,140,248,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
-          <button class="delete-btn" data-provider="custom" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
+          <button class="test-btn" data-provider="custom" style="background: rgba(91,155,213,0.1); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.3); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">测试连接</button>
+          <button class="save-btn" data-provider="custom" style="background: rgba(91,155,213,0.15); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.4); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">保存</button>
+          <button class="delete-btn" data-provider="custom" style="background: rgba(224,85,85,0.08); color: #e05555; border: 1px solid rgba(224,85,85,0.25); border-radius: 8px; padding: 6px 16px; font-size: 13px; cursor: pointer; transition: background 0.2s;">删除</button>
         </div>
       </div>
     </section>
 
     <!-- ==================== 2. 功能开关 ==================== -->
     <section style="margin-bottom: 36px;">
-      <h2 style="font-size: 18px; font-weight: 600; color: #f59e0b; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-        <span style="width: 4px; height: 20px; background: #f59e0b; border-radius: 2px; display: inline-block;"></span>
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
         功能开关
       </h2>
-      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px 20px;">
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 16px 20px;">
 
         <!-- 启用插件 -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
           <div>
-            <div style="font-size: 14px; color: #e2e8f0;">启用插件</div>
-            <div style="font-size: 12px; color: #6b7280;">全局启用或禁用回声破除者</div>
+            <div style="font-size: 14px; color: #2c3e50;">启用插件</div>
+            <div style="font-size: 12px; color: #7f8c9b;">全局启用或禁用回声破除者</div>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
             <input type="checkbox" id="toggle-enabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
-            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 12px; transition: background 0.3s;"></span>
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
             <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
           </label>
         </div>
 
         <!-- 引导教育模式 -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
           <div>
-            <div style="font-size: 14px; color: #e2e8f0;">引导教育模式 <span style="font-size: 11px; color: #818cf8; background: rgba(129,140,248,0.15); padding: 1px 6px; border-radius: 4px;">L2</span></div>
-            <div style="font-size: 12px; color: #6b7280;">在提问前显示苏格拉底式引导提示</div>
+            <div style="font-size: 14px; color: #2c3e50;">引导教育模式 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L2</span></div>
+            <div style="font-size: 12px; color: #7f8c9b;">在提问前显示苏格拉底式引导提示</div>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
             <input type="checkbox" id="toggle-guidedModeEnabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
-            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 12px; transition: background 0.3s;"></span>
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
             <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
           </label>
         </div>
 
         <!-- 强制思考输入 -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
           <div>
-            <div style="font-size: 14px; color: #e2e8f0;">强制思考输入 <span style="font-size: 11px; color: #818cf8; background: rgba(129,140,248,0.15); padding: 1px 6px; border-radius: 4px;">L3</span></div>
-            <div style="font-size: 12px; color: #6b7280;">要求用户在获取AI答案前先写下自己的想法</div>
+            <div style="font-size: 14px; color: #2c3e50;">强制思考输入 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L3</span></div>
+            <div style="font-size: 12px; color: #7f8c9b;">要求用户在获取AI答案前先写下自己的想法</div>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
             <input type="checkbox" id="toggle-forceThoughtInput" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
-            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 12px; transition: background 0.3s;"></span>
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
             <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
           </label>
         </div>
 
         <!-- 偏差分析 -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
           <div>
-            <div style="font-size: 14px; color: #e2e8f0;">偏差分析 <span style="font-size: 11px; color: #818cf8; background: rgba(129,140,248,0.15); padding: 1px 6px; border-radius: 4px;">L3</span></div>
-            <div style="font-size: 12px; color: #6b7280;">分析思考过程中的认知偏差和盲区</div>
+            <div style="font-size: 14px; color: #2c3e50;">偏差分析 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L3</span></div>
+            <div style="font-size: 12px; color: #7f8c9b;">分析思考过程中的认知偏差和盲区</div>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
             <input type="checkbox" id="toggle-biasAnalysisEnabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
-            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 12px; transition: background 0.3s;"></span>
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
             <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
           </label>
         </div>
@@ -212,12 +212,12 @@
         <!-- 靶场训练 -->
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
           <div>
-            <div style="font-size: 14px; color: #e2e8f0;">靶场训练 <span style="font-size: 11px; color: #818cf8; background: rgba(129,140,248,0.15); padding: 1px 6px; border-radius: 4px;">L4</span></div>
-            <div style="font-size: 12px; color: #6b7280;">通过找茬和证据链练习批判性思维</div>
+            <div style="font-size: 14px; color: #2c3e50;">靶场训练 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L4</span></div>
+            <div style="font-size: 12px; color: #7f8c9b;">通过找茬和证据链练习批判性思维</div>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
             <input type="checkbox" id="toggle-targetRangeEnabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
-            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 12px; transition: background 0.3s;"></span>
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
             <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
           </label>
         </div>
@@ -227,23 +227,23 @@
 
     <!-- ==================== 3. 阈值设置 ==================== -->
     <section style="margin-bottom: 36px;">
-      <h2 style="font-size: 18px; font-weight: 600; color: #f59e0b; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-        <span style="width: 4px; height: 20px; background: #f59e0b; border-radius: 2px; display: inline-block;"></span>
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
         阈值设置
       </h2>
-      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px;">
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px;">
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">使用时长阈值（分钟）</label>
-            <input type="number" id="input-durationThreshold" min="1" step="1" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">使用时长阈值（分钟）</label>
+            <input type="number" id="input-durationThreshold" min="1" step="1" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 14px; outline: none; transition: border-color 0.2s;" />
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">连续提问阈值</label>
-            <input type="number" id="input-consecutiveThreshold" min="1" step="1" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">连续提问阈值</label>
+            <input type="number" id="input-consecutiveThreshold" min="1" step="1" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 14px; outline: none; transition: border-color 0.2s;" />
           </div>
           <div>
-            <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">每日API调用上限</label>
-            <input type="number" id="input-dailyApiLimit" min="1" step="1" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 14px; outline: none; transition: border-color 0.2s;" />
+            <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">每日API调用上限</label>
+            <input type="number" id="input-dailyApiLimit" min="1" step="1" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 14px; outline: none; transition: border-color 0.2s;" />
           </div>
         </div>
       </div>
@@ -251,46 +251,46 @@
 
     <!-- ==================== 4. 会员信息 ==================== -->
     <section style="margin-bottom: 36px;">
-      <h2 style="font-size: 18px; font-weight: 600; color: #f59e0b; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-        <span style="width: 4px; height: 20px; background: #f59e0b; border-radius: 2px; display: inline-block;"></span>
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
         会员信息
       </h2>
-      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px;">
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-          <div style="font-size: 14px; color: #9ca3af;">当前等级：</div>
-          <span id="membership-tier" style="font-size: 16px; font-weight: 600; color: #818cf8;">免费版</span>
+          <div style="font-size: 14px; color: #7f8c9b;">当前等级：</div>
+          <span id="membership-tier" style="font-size: 16px; font-weight: 600; color: #5b9bd5;">免费版</span>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">许可证密钥</label>
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">许可证密钥</label>
           <div style="display: flex; gap: 8px;">
-            <input type="text" id="license-key-input" placeholder="XXXX-XXXX-XXXX-XXXX" style="flex: 1; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; outline: none; transition: border-color 0.2s;" />
-            <button id="activate-license-btn" style="background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px 20px; font-size: 13px; cursor: pointer; transition: background 0.2s; white-space: nowrap;">激活</button>
+            <input type="text" id="license-key-input" placeholder="XXXX-XXXX-XXXX-XXXX" style="flex: 1; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <button id="activate-license-btn" style="background: rgba(232,168,56,0.1); color: #e8a838; border: 1px solid rgba(232,168,56,0.3); border-radius: 8px; padding: 8px 20px; font-size: 13px; cursor: pointer; transition: background 0.2s; white-space: nowrap;">激活</button>
           </div>
         </div>
-        <div id="license-status" style="font-size: 12px; color: #6b7280;"></div>
+        <div id="license-status" style="font-size: 12px; color: #7f8c9b;"></div>
       </div>
     </section>
 
     <!-- ==================== 5. 首选供应商 ==================== -->
     <section style="margin-bottom: 36px;">
-      <h2 style="font-size: 18px; font-weight: 600; color: #f59e0b; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-        <span style="width: 4px; height: 20px; background: #f59e0b; border-radius: 2px; display: inline-block;"></span>
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
         首选供应商
       </h2>
-      <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px;">
-        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">选择默认使用的 LLM 供应商</label>
-        <select id="select-preferredProvider" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 14px; outline: none; cursor: pointer; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22%3E%3Cpath fill=%22%239ca3af%22 d=%22M6 8L1 3h10z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;">
-          <option value="deepseek" style="background: #2d2a5e; color: #e2e8f0;">DeepSeek</option>
-          <option value="zhipu" style="background: #2d2a5e; color: #e2e8f0;">智谱 GLM</option>
-          <option value="qwen" style="background: #2d2a5e; color: #e2e8f0;">通义千问</option>
-          <option value="custom" style="background: #2d2a5e; color: #e2e8f0;">自定义 API</option>
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 20px;">
+        <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">选择默认使用的 LLM 供应商</label>
+        <select id="select-preferredProvider" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 14px; outline: none; cursor: pointer; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22%3E%3Cpath fill=%22%237f8c9b%22 d=%22M6 8L1 3h10z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center;">
+          <option value="deepseek" style="background: #ffffff; color: #2c3e50;">DeepSeek</option>
+          <option value="zhipu" style="background: #ffffff; color: #2c3e50;">智谱 GLM</option>
+          <option value="qwen" style="background: #ffffff; color: #2c3e50;">通义千问</option>
+          <option value="custom" style="background: #ffffff; color: #2c3e50;">自定义 API</option>
         </select>
       </div>
     </section>
 
     <!-- 底部提示 -->
-    <footer style="text-align: center; padding: 16px 0; border-top: 1px solid rgba(255,255,255,0.06);">
-      <p style="font-size: 12px; color: #6b7280; margin: 0;">回声破除者 · 认知抗阻伴学插件 · 设置页面</p>
+    <footer style="text-align: center; padding: 16px 0; border-top: 1px solid #dce6f0;">
+      <p style="font-size: 12px; color: #7f8c9b; margin: 0;">回声破除者 · 认知抗阻伴学插件 · 设置页面</p>
     </footer>
 
   </div>

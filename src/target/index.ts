@@ -162,16 +162,16 @@ function renderTargetGrid(): void {
     };
 
     const difficultyColors: Record<string, { bg: string; text: string; label: string }> = {
-      easy: { bg: 'rgba(74,222,128,0.15)', text: '#4ade80', label: '简单' },
-      medium: { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', label: '中等' },
-      hard: { bg: 'rgba(239,68,68,0.15)', text: '#ef4444', label: '困难' },
+      easy: { bg: 'rgba(76,175,125,0.12)', text: '#4caf7d', label: '简单' },
+      medium: { bg: 'rgba(232,168,56,0.12)', text: '#e8a838', label: '中等' },
+      hard: { bg: 'rgba(224,85,85,0.12)', text: '#e05555', label: '困难' },
     };
     const diff = difficultyColors[target.difficulty] || difficultyColors.easy;
 
     card.innerHTML = `
-      <div style="font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 10px;">${escapeHtml(target.title)}</div>
+      <div style="font-size: 15px; font-weight: 600; color: #2c3e50; margin-bottom: 10px;">${escapeHtml(target.title)}</div>
       <div style="display: flex; gap: 6px;">
-        <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(129,140,248,0.15); color: #818cf8;">${escapeHtml(target.category)}</span>
+        <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(91,155,213,0.1); color: #5b9bd5;">${escapeHtml(target.category)}</span>
         <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: ${diff.bg}; color: ${diff.text};">${diff.label}</span>
       </div>
     `;
@@ -218,9 +218,9 @@ function selectTarget(target: TargetText): void {
   if (categoryBadge) categoryBadge.textContent = target.category;
 
   const difficultyColors: Record<string, { bg: string; text: string; label: string }> = {
-    easy: { bg: 'rgba(74,222,128,0.15)', text: '#4ade80', label: '简单' },
-    medium: { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b', label: '中等' },
-    hard: { bg: 'rgba(239,68,68,0.15)', text: '#ef4444', label: '困难' },
+    easy: { bg: 'rgba(76,175,125,0.12)', text: '#4caf7d', label: '简单' },
+    medium: { bg: 'rgba(232,168,56,0.12)', text: '#e8a838', label: '中等' },
+    hard: { bg: 'rgba(224,85,85,0.12)', text: '#e05555', label: '困难' },
   };
   const diff = difficultyColors[target.difficulty] || difficultyColors.easy;
   if (difficultyBadge) {
@@ -458,7 +458,7 @@ function showResult(
   if (matchedEl) {
     matchedEl.innerHTML = matchedWeakPoints.length > 0
       ? matchedWeakPoints.map(p => `<div style="margin-bottom: 4px;">• ${escapeHtml(p)}</div>`).join('')
-      : '<div style="color: #6b7280;">无</div>';
+      : '<div style="color: #7f8c9b;">无</div>';
   }
 
   // 遗漏
@@ -466,7 +466,7 @@ function showResult(
   if (missedEl) {
     missedEl.innerHTML = missedWeakPoints.length > 0
       ? missedWeakPoints.map(p => `<div style="margin-bottom: 4px;">• ${escapeHtml(p)}</div>`).join('')
-      : '<div style="color: #6b7280;">无</div>';
+      : '<div style="color: #7f8c9b;">无</div>';
   }
 
   // 误判
@@ -474,7 +474,7 @@ function showResult(
   if (falseAlarmsEl) {
     falseAlarmsEl.innerHTML = falseAlarms.length > 0
       ? falseAlarms.map(p => `<div style="margin-bottom: 4px;">• ${escapeHtml(p)}</div>`).join('')
-      : '<div style="color: #6b7280;">无</div>';
+      : '<div style="color: #7f8c9b;">无</div>';
   }
 
   // 渲染带颜色的结果文本
@@ -818,7 +818,7 @@ function drawEvidenceMap(): void {
     ctx.roundRect(node.x, node.y, nodeWidth, nodeHeight, radius);
     ctx.fillStyle = isSelected ? 'rgba(129,140,248,0.3)' : colors.bg;
     ctx.fill();
-    ctx.strokeStyle = isSelected ? '#818cf8' : colors.border;
+    ctx.strokeStyle = isSelected ? '#5b9bd5' : colors.border;
     ctx.lineWidth = isSelected ? 2.5 : 1.5;
     ctx.stroke();
 
@@ -831,7 +831,7 @@ function drawEvidenceMap(): void {
 
     // 绘制文本
     ctx.font = '12px sans-serif';
-    ctx.fillStyle = '#e2e8f0';
+    ctx.fillStyle = '#2c3e50';
     ctx.textAlign = 'left';
 
     // 文本截断

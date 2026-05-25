@@ -276,11 +276,11 @@ async function loadHistory(): Promise<void> {
     detail.style.cssText = 'display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);';
 
     if (log.question) {
-      detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#818cf8;">问题：</strong>${log.question}</p>`;
+      detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#5b9bd5;">问题：</strong>${log.question}</p>`;
     }
-    detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#f59e0b;">想法：</strong>${log.myThought}</p>`;
+    detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#e8a838;">想法：</strong>${log.myThought}</p>`;
     if (log.keyPoints) {
-      detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#818cf8;">关键点：</strong>${log.keyPoints}</p>`;
+      detail.innerHTML += `<p style="margin:0 0 4px;font-size:11px;color:#94a3b8;"><strong style="color:#5b9bd5;">关键点：</strong>${log.keyPoints}</p>`;
     }
     if (log.biasAnalysis) {
       const a = log.biasAnalysis;

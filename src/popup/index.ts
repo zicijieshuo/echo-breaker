@@ -60,28 +60,28 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
       text: '暂无数据',
       left: 'center',
       top: 'center',
-      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+      textStyle: { color: 'rgba(44,62,80,0.25)', fontSize: 14, fontWeight: 'normal' },
     },
     grid: { top: 15, right: 12, bottom: 24, left: 36 },
     xAxis: {
       type: 'category',
       data: dates.map(formatDateLabel),
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
-      axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 },
+      axisLine: { lineStyle: { color: '#dce6f0' } },
+      axisLabel: { color: '#7f8c9b', fontSize: 10 },
       axisTick: { show: false },
     },
     yAxis: {
       type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
-      axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 10, formatter: '{value}m' },
+      splitLine: { lineStyle: { color: '#eef2f7' } },
+      axisLabel: { color: '#7f8c9b', fontSize: 10, formatter: '{value}m' },
       minInterval: 1,
     },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(30,27,75,0.9)',
-      borderColor: 'rgba(99,102,241,0.3)',
+      backgroundColor: 'rgba(240,245,250,0.9)',
+      borderColor: 'rgba(58,124,195,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
     },
     series: [{
@@ -91,8 +91,8 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
       itemStyle: {
         borderRadius: [4, 4, 0, 0],
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: '#818cf8' },
-          { offset: 1, color: '#6366f1' },
+          { offset: 0, color: '#5b9bd5' },
+          { offset: 1, color: '#3a7cc3' },
         ]),
       },
     }],
@@ -121,11 +121,11 @@ function initRatioChart(questions: number, copies: number): void {
   const hasData = questions > 0 || copies > 0;
   const data = hasData
     ? [
-        { value: questions, name: '提问次数', itemStyle: { color: '#6366f1' } },
-        { value: copies, name: '复制次数', itemStyle: { color: '#f59e0b' } },
+        { value: questions, name: '提问次数', itemStyle: { color: '#3a7cc3' } },
+        { value: copies, name: '复制次数', itemStyle: { color: '#e8a838' } },
       ]
     : [
-        { value: 1, name: '暂无数据', itemStyle: { color: 'rgba(255,255,255,0.06)' } },
+        { value: 1, name: '暂无数据', itemStyle: { color: '#eef2f7' } },
       ];
 
   const option: echarts.EChartsOption = {
@@ -134,12 +134,12 @@ function initRatioChart(questions: number, copies: number): void {
       text: '暂无数据',
       left: 'center',
       top: '35%',
-      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+      textStyle: { color: 'rgba(44,62,80,0.25)', fontSize: 14, fontWeight: 'normal' },
     },
     tooltip: hasData ? {
       trigger: 'item',
-      backgroundColor: 'rgba(30,27,75,0.9)',
-      borderColor: 'rgba(99,102,241,0.3)',
+      backgroundColor: 'rgba(240,245,250,0.9)',
+      borderColor: 'rgba(58,124,195,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
     } : undefined,
     legend: hasData ? {
@@ -211,27 +211,27 @@ function initHourlyChart(hourlyData: number[]): void {
       text: '暂无数据',
       left: 'center',
       top: 'center',
-      textStyle: { color: 'rgba(255,255,255,0.25)', fontSize: 14, fontWeight: 'normal' },
+      textStyle: { color: 'rgba(44,62,80,0.25)', fontSize: 14, fontWeight: 'normal' },
     },
     grid: { top: 8, right: 36, bottom: 8, left: 52 },
     xAxis: {
       type: 'value',
       axisLine: { show: false },
       axisTick: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
-      axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 9, formatter: '{value}m' },
+      splitLine: { lineStyle: { color: '#eef2f7' } },
+      axisLabel: { color: '#7f8c9b', fontSize: 9, formatter: '{value}m' },
     },
     yAxis: {
       type: 'category',
       data: periodLabels,
-      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
+      axisLine: { lineStyle: { color: '#dce6f0' } },
       axisTick: { show: false },
-      axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 },
+      axisLabel: { color: '#7f8c9b', fontSize: 10 },
     },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(30,27,75,0.9)',
-      borderColor: 'rgba(99,102,241,0.3)',
+      backgroundColor: 'rgba(240,245,250,0.9)',
+      borderColor: 'rgba(58,124,195,0.3)',
       textStyle: { color: '#fff', fontSize: 12 },
     },
     series: [{
@@ -241,8 +241,8 @@ function initHourlyChart(hourlyData: number[]): void {
         itemStyle: {
           borderRadius: [0, 3, 3, 0],
           color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-            { offset: 0, color: 'rgba(99,102,241,0.6)' },
-            { offset: 1, color: val >= maxVal * 0.8 ? '#f59e0b' : '#818cf8' },
+            { offset: 0, color: 'rgba(58,124,195,0.6)' },
+            { offset: 1, color: val >= maxVal * 0.8 ? '#e8a838' : '#5b9bd5' },
           ]),
         },
       })),
@@ -264,10 +264,10 @@ async function updateStatusIndicator(): Promise<void> {
   try {
     const result: any = await chrome.runtime.sendMessage({ type: 'CHECK_CURRENT_SITE' });
     if (result?.isAI) {
-      dot.style.background = '#4ade80';
+      dot.style.background = '#4caf7d';
       dot.style.animation = 'pulse 2s infinite';
       text.textContent = `正在监测 · ${result.siteName || ''}`;
-      text.style.color = '#4ade80';
+      text.style.color = '#4caf7d';
     } else {
       dot.style.background = '#6b7280';
       dot.style.animation = '';
@@ -437,8 +437,13 @@ async function openOptionsPage(): Promise<void> {
 /** 切换引导模式 */
 async function toggleGuidedMode(): Promise<void> {
   try {
-    // 通过 sidepanel 打开思考日志
-    await openSidePanel();
+    // 向当前活跃的 AI 网站标签页发送引导模式切换消息
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      await chrome.tabs.sendMessage(tab.id, {
+        type: 'TOGGLE_GUIDED_MODE',
+      });
+    }
   } catch (err) {
     console.error('[EchoBreaker Popup] 切换引导模式失败:', err);
   }

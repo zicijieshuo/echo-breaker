@@ -68,7 +68,7 @@ function injectStyles(): void {
 
     /* 关闭按钮悬停 */
     #echo-breaker-close:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: #dce6f0;
     }
   `;
   document.head.appendChild(style);
@@ -87,10 +87,10 @@ function createEdgeGlow(): HTMLDivElement {
     z-index: 2147483647;
     pointer-events: none;
     box-shadow:
-      inset 0 80px 60px -40px rgba(99, 102, 241, 0.25),
-      inset 0 -80px 60px -40px rgba(99, 102, 241, 0.25),
-      inset 80px 0 60px -40px rgba(99, 102, 241, 0.25),
-      inset -80px 0 60px -40px rgba(99, 102, 241, 0.25);
+      inset 0 80px 60px -40px rgba(58, 124, 195, 0.25),
+      inset 0 -80px 60px -40px rgba(58, 124, 195, 0.25),
+      inset 80px 0 60px -40px rgba(58, 124, 195, 0.25),
+      inset -80px 0 60px -40px rgba(58, 124, 195, 0.25);
     animation: echoEdgeGlow 2s ease-in-out;
   `;
   return glow;
@@ -117,13 +117,13 @@ function createAwakeningCard(prompt: string): HTMLDivElement {
   card.style.cssText = `
     pointer-events: auto;
     position: relative;
-    background: rgba(30, 27, 75, 0.95);
-    color: #e0e7ff;
+    background: rgba(240, 245, 250, 0.95);
+    color: #2c3e50;
     border-radius: 16px;
     padding: 32px 40px;
     max-width: 420px;
     text-align: center;
-    box-shadow: 0 0 60px rgba(99, 102, 241, 0.4), 0 0 120px rgba(129, 140, 248, 0.2);
+    box-shadow: 0 0 60px rgba(58, 124, 195, 0.4), 0 0 120px rgba(91, 155, 213, 0.2);
     animation: echoCardFadeIn 0.5s ease-out forwards, echoBreathe 3s ease-in-out 0.5s infinite;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   `;
@@ -142,7 +142,7 @@ function createAwakeningCard(prompt: string): HTMLDivElement {
     justify-content: center;
     border-radius: 50%;
     cursor: pointer;
-    color: #a5b4fc;
+    color: #5b9bd5;
     font-size: 16px;
     line-height: 1;
     user-select: none;
@@ -158,9 +158,9 @@ function createAwakeningCard(prompt: string): HTMLDivElement {
       <button id="echo-dismiss" style="
         padding: 8px 20px;
         border-radius: 8px;
-        border: 1px solid rgba(129, 140, 248, 0.3);
+        border: 1px solid rgba(91, 155, 213, 0.3);
         background: transparent;
-        color: #a5b4fc;
+        color: #5b9bd5;
         cursor: pointer;
         font-size: 14px;
         transition: background 0.2s;
@@ -169,7 +169,7 @@ function createAwakeningCard(prompt: string): HTMLDivElement {
         padding: 8px 20px;
         border-radius: 8px;
         border: none;
-        background: #6366f1;
+        background: #3a7cc3;
         color: white;
         cursor: pointer;
         font-size: 14px;
