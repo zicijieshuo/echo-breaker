@@ -6,6 +6,7 @@ import * as echarts from 'echarts';
 let weeklyChartInstance: echarts.ECharts | null = null;
 let ratioChartInstance: echarts.ECharts | null = null;
 let hourlyChartInstance: echarts.ECharts | null = null;
+let cdiChartInstance: echarts.ECharts | null = null;
 
 /** 自动刷新定时器 */
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -255,6 +256,169 @@ function initHourlyChart(hourlyData: number[]): void {
   hourlyChartInstance.setOption(option, true);
 }
 
+/** 初始化 CDI 趋势折线图 */
+function initCDIChart(history: { date: string; cdi: number }[]): void {
+  const container = document.getElementById('cdi-chart');
+  if (!container) return;
+
+  try {
+    if (!cdiChartInstance) {
+      cdiChartInstance = echarts.init(container, undefined, { renderer: 'canvas' });
+    }
+    cdiChartInstance.resize();
+  } catch (err) {
+    console.error('[EchoBreaker] cdi-chart ECharts初始化失败:', err);
+    return;
+  }
+
+  const hasData = history.length > 0;
+  const dates = history.map((h) => formatDateLabel(h.date));
+  const cdiValues = history.map((h) => h.cdi);
+
+  const option: echarts.EChartsOption = {
+    backgroundColor: 'transparent',
+    title: hasData ? undefined : {
+      text: '暂无数据',
+      left: 'center',
+      top: 'center',
+      textStyle: { color: 'rgba(44,62,80,0.25)', fontSize: 14, fontWeight: 'normal' },
+    },
+    grid: { top: 10, right: 12, bottom: 24, left: 32 },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      axisLine: { lineStyle: { color: '#dce6f0' } },
+      axisLabel: { color: '#7f8c9b', fontSize: 10 },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: 'value',
+      min: 0,
+      max: 100,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: '#eef2f7' } },
+      axisLabel: { color: '#7f8c9b', fontSize: 10 },
+    },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(240,245,250,0.9)',
+      borderColor: 'rgba(58,124,195,0.3)',
+      textStyle: { color: '#fff', fontSize: 12 },
+    },
+    series: [{
+      type: 'line',
+      data: cdiValues,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      lineStyle: { color: '#5b9bd5', width: 2 },
+      itemStyle: { color: '#5b9bd5' },
+      areaStyle: { color: 'rgba(91,155,213,0.1)' },
+      animation: true,
+      animationDuration: 600,
+    }],
+  };
+
+  cdiChartInstance.setOption(option, true);
+}
+
+/** 更新 CDI 认知依赖指数 */
+async function updateCDI(): Promise<void> {
+  try {
+    const result: any = await chrome.runtime.sendMessage({ type: 'GET_CDI' });
+    const cdiValue = result?.cdi ?? 0;
+    const history: { date: string; cdi: number }[] = result?.history || [];
+
+    const cdiValueEl = document.getElementById('cdi-value');
+    const cdiLevelEl = document.getElementById('cdi-level');
+
+    if (cdiValueEl) {
+      cdiValueEl.textContent = String(cdiValue);
+    }
+
+    if (cdiLevelEl) {
+      let levelText = '独立思考';
+      let levelColor = '#4caf7d';
+      let bgColor = 'rgba(76,175,125,0.1)';
+
+      if (cdiValue <= 30) {
+        levelText = '独立思考';
+        levelColor = '#4caf7d';
+        bgColor = 'rgba(76,175,125,0.1)';
+      } else if (cdiValue <= 50) {
+        levelText = '轻度依赖';
+        levelColor = '#5b9bd5';
+        bgColor = 'rgba(91,155,213,0.1)';
+      } else if (cdiValue <= 70) {
+        levelText = '中度依赖';
+        levelColor = '#e8a838';
+        bgColor = 'rgba(232,168,56,0.1)';
+      } else {
+        levelText = '高度依赖';
+        levelColor = '#e05555';
+        bgColor = 'rgba(224,85,85,0.1)';
+      }
+
+      cdiLevelEl.textContent = levelText;
+      cdiLevelEl.style.color = levelColor;
+      cdiLevelEl.style.background = bgColor;
+    }
+
+    initCDIChart(history);
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 更新CDI失败:', err);
+  }
+}
+
+/** 更新徽章展示 */
+async function updateBadges(): Promise<void> {
+  const container = document.getElementById('badges-container');
+  if (!container) return;
+
+  try {
+    const result: any = await chrome.runtime.sendMessage({ type: 'GET_BADGES' });
+    const badges: any[] = result?.badges || [];
+
+    container.innerHTML = '';
+
+    if (badges.length === 0) {
+      container.innerHTML = '<span style="font-size: 12px; color: #7f8c9b;">暂无徽章，继续努力！</span>';
+      return;
+    }
+
+    const tierColors: Record<string, string> = {
+      bronze: '#cd7f32',
+      silver: '#c0c0c0',
+      gold: '#ffd700',
+    };
+    const tierLabels: Record<string, string> = {
+      bronze: '铜',
+      silver: '银',
+      gold: '金',
+    };
+
+    for (const badge of badges) {
+      const tier = badge.tier || 'bronze';
+      const tierColor = tierColors[tier] || '#cd7f32';
+      const tierLabel = tierLabels[tier] || '铜';
+
+      const badgeEl = document.createElement('div');
+      badgeEl.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 56px;';
+      badgeEl.title = badge.description || '';
+      badgeEl.innerHTML = `
+        <span style="font-size: 24px;">${badge.icon || '🏅'}</span>
+        <span style="font-size: 10px; color: #2c3e50; text-align: center; margin-top: 2px;">${badge.name || ''}</span>
+        <span style="font-size: 8px; color: ${tierColor};">${tierLabel}</span>
+      `;
+      container.appendChild(badgeEl);
+    }
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 更新徽章失败:', err);
+    container.innerHTML = '<span style="font-size: 12px; color: #7f8c9b;">暂无徽章，继续努力！</span>';
+  }
+}
+
 /** 更新当前状态指示器（通过 background 查询） */
 async function updateStatusIndicator(): Promise<void> {
   const dot = document.getElementById('status-dot');
@@ -317,6 +481,8 @@ async function updateDashboard(): Promise<void> {
     initHourlyChart(hourlyMinutes);
 
     await updateStatusIndicator();
+    await updateCDI();
+    await updateBadges();
   } catch (err) {
     console.error('[EchoBreaker Popup] 更新看板失败:', err);
   }
@@ -449,6 +615,62 @@ async function toggleGuidedMode(): Promise<void> {
   }
 }
 
+/** 场景选择对话框 */
+async function selectScenario(): Promise<void> {
+  const scenarios = [
+    { id: 'study', name: '学习研究', icon: '📚' },
+    { id: 'work', name: '工作辅助', icon: '💼' },
+    { id: 'creative', name: '创意写作', icon: '🎨' },
+    { id: 'casual', name: '日常闲聊', icon: '☕' },
+  ];
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9999;';
+
+  const dialog = document.createElement('div');
+  dialog.style.cssText = 'background: #ffffff; border-radius: 16px; padding: 20px; width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);';
+  dialog.innerHTML = `
+    <h3 style="font-size: 16px; font-weight: 600; color: #2c3e50; margin: 0 0 16px 0; text-align: center;">选择当前场景</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+      ${scenarios.map((s) => `
+        <button data-scenario="${s.id}" style="background: rgba(91,155,213,0.08); border: 1px solid rgba(91,155,213,0.25); border-radius: 12px; padding: 12px 8px; cursor: pointer; text-align: center; color: #2c3e50; font-size: 12px;">
+          <div style="font-size: 20px; margin-bottom: 4px;">${s.icon}</div>
+          <div style="color: #5b9bd5;">${s.name}</div>
+        </button>
+      `).join('')}
+    </div>
+    <button id="scenario-cancel" style="width: 100%; margin-top: 12px; padding: 8px; background: none; border: 1px solid #dce6f0; border-radius: 8px; cursor: pointer; color: #7f8c9b; font-size: 12px;">取消</button>
+  `;
+
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+
+  const closeDialog = () => {
+    document.body.removeChild(overlay);
+  };
+
+  dialog.querySelector('#scenario-cancel')?.addEventListener('click', closeDialog);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeDialog();
+  });
+
+  const scenarioButtons = dialog.querySelectorAll('button[data-scenario]');
+  scenarioButtons.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const scenarioId = (btn as HTMLElement).dataset.scenario || 'casual';
+      try {
+        await chrome.runtime.sendMessage({
+          type: 'SCENARIO_CHANGED',
+          scenario: scenarioId,
+        });
+      } catch (err) {
+        console.error('[EchoBreaker Popup] 切换场景失败:', err);
+      }
+      closeDialog();
+    });
+  });
+}
+
 /** 主初始化函数 */
 async function init(): Promise<void> {
   setVersion();
@@ -466,6 +688,7 @@ async function init(): Promise<void> {
   initWeeklyChart(getRecentDays(7), [0, 0, 0, 0, 0, 0, 0]);
   initRatioChart(0, 0);
   initHourlyChart(new Array(24).fill(0));
+  initCDIChart([]);
 
   // 然后获取数据并更新
   await updateDashboard();
@@ -479,10 +702,13 @@ async function init(): Promise<void> {
   document.getElementById('thought-log-btn')?.addEventListener('click', openSidePanel);
   document.getElementById('target-range-btn')?.addEventListener('click', openTargetRange);
   document.getElementById('api-count-btn')?.addEventListener('click', openOptionsPage);
+  document.getElementById('scenario-btn')?.addEventListener('click', selectScenario);
 
   refreshTimer = setInterval(() => {
     updateDashboard();
     updateApiCount();
+    updateCDI();
+    updateBadges();
   }, 30000);
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "echo-breaker",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "回声破除者 - 认知抗阻伴学浏览器插件",
   "private": true,
   "scripts": {

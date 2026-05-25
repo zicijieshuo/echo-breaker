@@ -13,6 +13,10 @@ import {
   TargetText,
   FindFaultSubmission,
   EvidenceMap,
+  CognitiveWallBlock,
+  CDIRecord,
+  Badge,
+  CloudUser,
 } from './types';
 
 /** 获取今日日期字符串 */
@@ -307,4 +311,159 @@ export async function saveEvidenceMap(map: EvidenceMap): Promise<void> {
     maps.push(map);
   }
   await chrome.storage.local.set({ [STORAGE_KEYS.EVIDENCE_MAPS]: maps });
+}
+
+// ============ L5 认知墙 ============
+
+/** 获取认知墙拦截记录 */
+export async function getCognitiveWallBlocks(): Promise<CognitiveWallBlock[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.COGNITIVE_WALL_BLOCKS);
+  return result[STORAGE_KEYS.COGNITIVE_WALL_BLOCKS] || [];
+}
+
+/** 保存认知墙拦截记录 */
+export async function saveCognitiveWallBlock(block: CognitiveWallBlock): Promise<void> {
+  const blocks = await getCognitiveWallBlocks();
+  blocks.unshift(block);
+  // 最多保留 200 条
+  if (blocks.length > 200) blocks.length = 200;
+  await chrome.storage.local.set({ [STORAGE_KEYS.COGNITIVE_WALL_BLOCKS]: blocks });
+}
+
+/** 获取当前检测到的场景 */
+export async function getDetectedScenario(): Promise<string> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.DETECTED_SCENARIO);
+  return result[STORAGE_KEYS.DETECTED_SCENARIO] || 'default';
+}
+
+/** 保存当前检测到的场景 */
+export async function saveDetectedScenario(scenario: string): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.DETECTED_SCENARIO]: scenario });
+}
+
+// ============ L6 CDI ============
+
+/** 获取 CDI 历史记录 */
+export async function getCDIHistory(): Promise<CDIRecord[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.CDI_HISTORY);
+  return result[STORAGE_KEYS.CDI_HISTORY] || [];
+}
+
+/** 保存 CDI 记录 */
+export async function saveCDIRecord(record: CDIRecord): Promise<void> {
+  const history = await getCDIHistory();
+  const idx = history.findIndex((r) => r.date === record.date);
+  if (idx !== -1) {
+    history[idx] = record;
+  } else {
+    history.push(record);
+  }
+  // 最多保留 365 天
+  if (history.length > 365) {
+    history.sort((a, b) => a.date.localeCompare(b.date));
+    history.splice(0, history.length - 365);
+  }
+  await chrome.storage.local.set({ [STORAGE_KEYS.CDI_HISTORY]: history });
+}
+
+/** 获取最近 N 天的 CDI 记录 */
+export async function getRecentCDI(days: number): Promise<CDIRecord[]> {
+  const history = await getCDIHistory();
+  return history.slice(-days);
+}
+
+// ============ L6 徽章 ============
+
+/** 获取已获得的徽章 */
+export async function getEarnedBadges(): Promise<Badge[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.BADGES);
+  return result[STORAGE_KEYS.BADGES] || [];
+}
+
+/** 保存徽章 */
+export async function saveBadge(badge: Badge): Promise<void> {
+  const badges = await getEarnedBadges();
+  const idx = badges.findIndex((b) => b.id === badge.id);
+  if (idx !== -1) {
+    badges[idx] = badge;
+  } else {
+    badges.push(badge);
+  }
+  await chrome.storage.local.set({ [STORAGE_KEYS.BADGES]: badges });
+}
+
+// ============ L6 云端用户 ============
+
+/** 获取云端用户信息 */
+export async function getCloudUser(): Promise<CloudUser | null> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.CLOUD_USER);
+  return result[STORAGE_KEYS.CLOUD_USER] || null;
+}
+
+/** 保存云端用户信息 */
+export async function saveCloudUser(user: CloudUser): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.CLOUD_USER]: user });
+}
+
+/** 清除云端用户信息 */
+export async function clearCloudUser(): Promise<void> {
+  await chrome.storage.local.remove(STORAGE_KEYS.CLOUD_USER);
+}
+
+// ============ CDI 计算算法 ============
+
+/** 计算 CDI（认知依赖指数） */
+export async function calculateCDI(): Promise<CDIRecord> {
+  const today = getTodayKey();
+  const record = await getTodayRecord();
+  const thoughtLogs = await getThoughtLogs();
+
+  // 时长依赖度：使用时长越长越依赖
+  // 基准：1.5小时=50分，3小时=80分，5小时=100分
+  const durationScore = Math.min(100, Math.round(
+    (record.total_seconds / 3600) * 33.3
+  ));
+
+  // 复制依赖度：复制次数越多越依赖
+  // 基准：5次=30分，10次=60分，20次=100分
+  const copyScore = Math.min(100, Math.round(
+    record.copy_paste_count * 5
+  ));
+
+  // 连续提问依赖度：连续提问轮数越多越依赖
+  // 基准：3轮=30分，5轮=60分，8轮=100分
+  const consecutiveScore = Math.min(100, Math.round(
+    record.consecutive_rounds * 12.5
+  ));
+
+  // 思考深度：思考日志越多、偏差分析分数越高越好（反向指标）
+  const todayLogs = thoughtLogs.filter((l) => l.timestamp > new Date().setHours(0, 0, 0, 0));
+  const avgBiasScore = todayLogs.length > 0 && todayLogs.every((l) => l.biasAnalysis)
+    ? todayLogs.reduce((sum, l) => sum + (l.biasAnalysis?.overallScore || 0), 0) / todayLogs.length
+    : 50;
+  // 思考深度得分 = 100 - 平均偏差分数（偏差分数越高说明思考越全面，依赖越低）
+  const thoughtDepthScore = Math.round(100 - avgBiasScore);
+
+  // CDI 综合分 = 加权平均
+  // 时长权重0.3，复制权重0.25，连续提问权重0.2，思考深度权重0.25
+  const cdi = Math.round(
+    durationScore * 0.3 +
+    copyScore * 0.25 +
+    consecutiveScore * 0.2 +
+    thoughtDepthScore * 0.25
+  );
+
+  const cdiRecord: CDIRecord = {
+    date: today,
+    cdi: Math.max(0, Math.min(100, cdi)),
+    dimensions: {
+      durationScore,
+      copyScore,
+      consecutiveScore,
+      thoughtDepthScore,
+    },
+  };
+
+  await saveCDIRecord(cdiRecord);
+  return cdiRecord;
 }

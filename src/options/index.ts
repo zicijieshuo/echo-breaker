@@ -2,7 +2,7 @@
 
 import { getSettings, saveSettings, getLLMConfigs, saveLLMConfig, deleteLLMConfig, getMembership, saveMembership } from '../lib/storage';
 import { LLM_PROVIDER_DEFAULTS } from '../lib/constants';
-import { UserSettings, LLMApiConfig, LLMProvider, MembershipTier, TIER_QUOTAS } from '../lib/types';
+import { UserSettings, LLMApiConfig, LLMProvider, MembershipTier, TIER_QUOTAS, Scenario } from '../lib/types';
 
 // ============ 工具函数 ============
 
@@ -106,6 +106,28 @@ function populateSettings(settings: UserSettings): void {
   setToggle('toggle-biasAnalysisEnabled', settings.biasAnalysisEnabled);
   setToggle('toggle-targetRangeEnabled', settings.targetRangeEnabled);
 
+  // L5 情境适应
+  setToggle('toggle-autoScenarioDetection', settings.autoScenarioDetection);
+  setToggle('toggle-cognitiveWallEnabled', settings.cognitiveWallEnabled);
+
+  // L5 场景选择
+  const scenarioSelect = document.getElementById('select-scenario') as HTMLSelectElement;
+  if (scenarioSelect) scenarioSelect.value = settings.scenario;
+
+  // L5 认知墙相似度阈值（存储为小数 0.50-0.99，显示为百分比 50-99）
+  const thresholdInput = document.getElementById('input-cognitiveWallThreshold') as HTMLInputElement;
+  const thresholdDisplay = document.getElementById('threshold-display') as HTMLElement;
+  const thresholdPercent = Math.round(settings.cognitiveWallThreshold * 100);
+  if (thresholdInput) thresholdInput.value = String(thresholdPercent);
+  if (thresholdDisplay) thresholdDisplay.textContent = `${thresholdPercent}%`;
+
+  // L6 云端同步
+  setToggle('toggle-cloudSyncEnabled', settings.cloudSyncEnabled);
+  const cloudServerUrlInput = document.getElementById('input-cloudServerUrl') as HTMLInputElement;
+  if (cloudServerUrlInput) cloudServerUrlInput.value = settings.cloudServerUrl;
+  const cloudAuthTokenInput = document.getElementById('input-cloudAuthToken') as HTMLInputElement;
+  if (cloudAuthTokenInput) cloudAuthTokenInput.value = settings.cloudAuthToken;
+
   // 阈值（存储单位是秒，显示为分钟）
   const durationInput = document.getElementById('input-durationThreshold') as HTMLInputElement;
   const consecutiveInput = document.getElementById('input-consecutiveThreshold') as HTMLInputElement;
@@ -170,6 +192,9 @@ function bindEvents(): void {
     'toggle-forceThoughtInput',
     'toggle-biasAnalysisEnabled',
     'toggle-targetRangeEnabled',
+    'toggle-autoScenarioDetection',
+    'toggle-cognitiveWallEnabled',
+    'toggle-cloudSyncEnabled',
   ];
   for (const id of toggleIds) {
     const checkbox = document.getElementById(id) as HTMLInputElement;
@@ -197,6 +222,49 @@ function bindEvents(): void {
   if (providerSelect) {
     providerSelect.addEventListener('change', () => {
       savePreferredProvider();
+    });
+  }
+
+  // L5 场景选择事件
+  const scenarioSelect = document.getElementById('select-scenario') as HTMLSelectElement;
+  if (scenarioSelect) {
+    scenarioSelect.addEventListener('change', () => {
+      saveScenarioSetting();
+    });
+  }
+
+  // L5 认知墙相似度阈值滑块事件
+  const thresholdSlider = document.getElementById('input-cognitiveWallThreshold') as HTMLInputElement;
+  if (thresholdSlider) {
+    thresholdSlider.addEventListener('input', () => {
+      const percent = parseInt(thresholdSlider.value, 10);
+      const thresholdDisplay = document.getElementById('threshold-display') as HTMLElement;
+      if (thresholdDisplay) thresholdDisplay.textContent = `${percent}%`;
+      debouncedSaveCognitiveWallThreshold();
+    });
+  }
+
+  // L6 云端服务器地址事件
+  const cloudServerUrlInput = document.getElementById('input-cloudServerUrl') as HTMLInputElement;
+  if (cloudServerUrlInput) {
+    cloudServerUrlInput.addEventListener('blur', () => {
+      saveCloudServerUrl();
+    });
+  }
+
+  // L6 云端登录按钮事件
+  const cloudLoginBtn = document.getElementById('cloud-login-btn');
+  if (cloudLoginBtn) {
+    cloudLoginBtn.addEventListener('click', () => {
+      cloudLogin();
+    });
+  }
+
+  // L6 手动同步按钮事件
+  const manualSyncBtn = document.getElementById('manual-sync-btn');
+  if (manualSyncBtn) {
+    manualSyncBtn.addEventListener('click', () => {
+      manualSync();
     });
   }
 
@@ -261,6 +329,9 @@ async function saveToggleSettings(): Promise<void> {
     forceThoughtInput: getToggleValue('toggle-forceThoughtInput'),
     biasAnalysisEnabled: getToggleValue('toggle-biasAnalysisEnabled'),
     targetRangeEnabled: getToggleValue('toggle-targetRangeEnabled'),
+    autoScenarioDetection: getToggleValue('toggle-autoScenarioDetection'),
+    cognitiveWallEnabled: getToggleValue('toggle-cognitiveWallEnabled'),
+    cloudSyncEnabled: getToggleValue('toggle-cloudSyncEnabled'),
   };
   await saveSettings(updates);
 }
@@ -292,6 +363,80 @@ async function savePreferredProvider(): Promise<void> {
   const providerSelect = document.getElementById('select-preferredProvider') as HTMLSelectElement;
   if (!providerSelect) return;
   await saveSettings({ preferredProvider: providerSelect.value as LLMProvider });
+}
+
+/** 保存场景设置 */
+async function saveScenarioSetting(): Promise<void> {
+  const scenarioSelect = document.getElementById('select-scenario') as HTMLSelectElement;
+  if (!scenarioSelect) return;
+  await saveSettings({ scenario: scenarioSelect.value as Scenario });
+}
+
+/** 保存认知墙相似度阈值 */
+async function saveCognitiveWallThreshold(): Promise<void> {
+  const thresholdSlider = document.getElementById('input-cognitiveWallThreshold') as HTMLInputElement;
+  if (!thresholdSlider) return;
+  const percent = parseInt(thresholdSlider.value, 10);
+  // 百分比 (50-99) 转换为小数 (0.50-0.99)
+  await saveSettings({ cognitiveWallThreshold: percent / 100 });
+}
+
+const debouncedSaveCognitiveWallThreshold = debounce(saveCognitiveWallThreshold, 300);
+
+/** 保存云端服务器地址 */
+async function saveCloudServerUrl(): Promise<void> {
+  const cloudServerUrlInput = document.getElementById('input-cloudServerUrl') as HTMLInputElement;
+  if (!cloudServerUrlInput) return;
+  await saveSettings({ cloudServerUrl: cloudServerUrlInput.value.trim() });
+}
+
+/** 云端登录 */
+async function cloudLogin(): Promise<void> {
+  const serverUrlInput = document.getElementById('input-cloudServerUrl') as HTMLInputElement;
+  const syncStatusEl = document.getElementById('sync-status') as HTMLElement;
+  if (!serverUrlInput || !syncStatusEl) return;
+
+  const serverUrl = serverUrlInput.value.trim();
+  if (!serverUrl) {
+    syncStatusEl.style.color = '#ef4444';
+    syncStatusEl.textContent = '请先填写服务器地址';
+    return;
+  }
+
+  // 尝试打开服务器的登录页面
+  const loginUrl = `${serverUrl.replace(/\/+$/, '')}/login`;
+  try {
+    await chrome.tabs.create({ url: loginUrl });
+    syncStatusEl.style.color = '#5b9bd5';
+    syncStatusEl.textContent = '已打开登录页面，登录后 Token 将自动获取';
+  } catch {
+    syncStatusEl.style.color = '#ef4444';
+    syncStatusEl.textContent = '无法打开登录页面';
+  }
+}
+
+/** 手动同步到云端 */
+async function manualSync(): Promise<void> {
+  const syncStatusEl = document.getElementById('sync-status') as HTMLElement;
+  if (!syncStatusEl) return;
+
+  syncStatusEl.style.color = '#5b9bd5';
+  syncStatusEl.textContent = '正在同步...';
+
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'SYNC_TO_CLOUD' });
+    if (response && response.success) {
+      syncStatusEl.style.color = '#4ade80';
+      syncStatusEl.textContent = `同步成功 ${new Date().toLocaleTimeString('zh-CN')}`;
+    } else {
+      syncStatusEl.style.color = '#ef4444';
+      syncStatusEl.textContent = `同步失败：${response?.error || '未知错误'}`;
+    }
+  } catch (error) {
+    syncStatusEl.style.color = '#ef4444';
+    const message = error instanceof Error ? error.message : '通信失败';
+    syncStatusEl.textContent = `同步失败：${message}`;
+  }
 }
 
 /** 获取 toggle 值 */

@@ -38,6 +38,16 @@ export const STORAGE_KEYS = {
   FIND_FAULT_SUBMISSIONS: 'echo_breaker_find_fault',
   /** 证据链导图 */
   EVIDENCE_MAPS: 'echo_breaker_evidence_maps',
+  /** L5: 认知墙拦截记录 */
+  COGNITIVE_WALL_BLOCKS: 'echo_breaker_cognitive_wall',
+  /** L5: 当前检测到的场景 */
+  DETECTED_SCENARIO: 'echo_breaker_detected_scenario',
+  /** L6: CDI 历史记录 */
+  CDI_HISTORY: 'echo_breaker_cdi_history',
+  /** L6: 徽章获得记录 */
+  BADGES: 'echo_breaker_badges',
+  /** L6: 云端用户信息 */
+  CLOUD_USER: 'echo_breaker_cloud_user',
 } as const;
 
 /** LLM 供应商默认配置 */
@@ -71,9 +81,39 @@ export const SCENARIO_MODE_MAP: Record<string, string> = {
 
 /** 场景URL关键词识别规则 */
 export const SCENARIO_URL_RULES: Record<string, string[]> = {
-  thesis: ['cnki.net', 'xueshu.baidu.com'],
-  reading: ['douban.com/book', 'goodreads.com'],
+  thesis: ['cnki.net', 'xueshu.baidu.com', 'scholar.google.com', 'wanfangdata.com.cn', 'cqvip.com'],
+  reading: ['douban.com/book', 'goodreads.com', 'weread.qq.com', 'z-library.org'],
+  homework: ['chaoxing.com', 'xueersi.com', 'zhihuishu.com', 'mooc1.chaoxing.com'],
+  exam: [],
 } as const;
+
+/** 场景显示名称 */
+export const SCENARIO_LABELS: Record<string, string> = {
+  thesis: '论文写作',
+  homework: '日常作业',
+  reading: '文献阅读',
+  exam: '考试复习',
+  default: '默认模式',
+} as const;
+
+/** 徽章定义列表 */
+export const BADGE_DEFINITIONS = [
+  { id: 'patience_bronze', name: '耐心新手', description: '连续3天使用时长低于1小时', icon: '🧘', tier: 'bronze' as const, condition: 'consecutive_low_usage_3' },
+  { id: 'patience_silver', name: '耐心修行者', description: '连续7天使用时长低于1小时', icon: '🧘', tier: 'silver' as const, condition: 'consecutive_low_usage_7' },
+  { id: 'patience_gold', name: '耐心大师', description: '连续30天使用时长低于1小时', icon: '🧘', tier: 'gold' as const, condition: 'consecutive_low_usage_30' },
+  { id: 'thinker_bronze', name: '思考新手', description: '累计完成10条思考日志', icon: '💭', tier: 'bronze' as const, condition: 'thought_logs_10' },
+  { id: 'thinker_silver', name: '思考达人', description: '累计完成50条思考日志', icon: '💭', tier: 'silver' as const, condition: 'thought_logs_50' },
+  { id: 'thinker_gold', name: '思考大师', description: '累计完成200条思考日志', icon: '💭', tier: 'gold' as const, condition: 'thought_logs_200' },
+  { id: 'questioner_bronze', name: '提问新手', description: '累计触发5次苏格拉底式反问', icon: '❓', tier: 'bronze' as const, condition: 'triggers_5' },
+  { id: 'questioner_silver', name: '提问家', description: '累计触发20次苏格拉底式反问', icon: '❓', tier: 'silver' as const, condition: 'triggers_20' },
+  { id: 'questioner_gold', name: '提问大师', description: '累计触发50次苏格拉底式反问', icon: '❓', tier: 'gold' as const, condition: 'triggers_50' },
+  { id: 'critic_bronze', name: '批判新手', description: '在靶场中完成3次找茬', icon: '🎯', tier: 'bronze' as const, condition: 'find_fault_3' },
+  { id: 'critic_silver', name: '批判者', description: '在靶场中完成10次找茬', icon: '🎯', tier: 'silver' as const, condition: 'find_fault_10' },
+  { id: 'critic_gold', name: '批判大师', description: '在靶场中完成30次找茬且平均分>70', icon: '🎯', tier: 'gold' as const, condition: 'find_fault_30' },
+  { id: 'wall_bronze', name: '守门新手', description: '认知墙成功拦截5次', icon: '🛡️', tier: 'bronze' as const, condition: 'wall_blocks_5' },
+  { id: 'wall_silver', name: '守门人', description: '认知墙成功拦截20次', icon: '🛡️', tier: 'silver' as const, condition: 'wall_blocks_20' },
+  { id: 'wall_gold', name: '守门大师', description: '认知墙成功拦截50次', icon: '🛡️', tier: 'gold' as const, condition: 'wall_blocks_50' },
+] as const;
 
 /** Alarm 名称常量 */
 export const ALARM_NAMES = {

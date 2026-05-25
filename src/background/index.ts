@@ -1,7 +1,8 @@
 // 回声破除者 - Background Service Worker
 
-import { THRESHOLDS, STORAGE_KEYS, ALARM_NAMES } from '../lib/constants';
-import type { AIWebsite, DailyRecord, TriggerType, BiasAnalysis } from '../lib/types';
+import { THRESHOLDS, STORAGE_KEYS, ALARM_NAMES, BADGE_DEFINITIONS, SCENARIO_URL_RULES } from '../lib/constants';
+import type { AIWebsite, DailyRecord, TriggerType, BiasAnalysis, CognitiveWallBlock, Scenario, Badge } from '../lib/types';
+import { SCENARIO_STRATEGIES } from '../lib/types';
 import {
   getUsageData,
   getTodayRecord,
@@ -20,11 +21,144 @@ import {
   saveThoughtLog,
   updateThoughtLog,
   getThoughtLogs,
+  saveCognitiveWallBlock,
+  getDetectedScenario,
+  saveDetectedScenario,
+  calculateCDI,
+  getRecentCDI,
+  getEarnedBadges,
+  saveBadge,
+  getFindFaultSubmissions,
+  getCognitiveWallBlocks,
 } from '../lib/storage';
 import { callLLM, generateGuidedPrompt, analyzeBias, evaluateFindFault } from '../lib/llm';
 
 /** 已加载的 AI 网站配置列表 */
 let aiWebsites: AIWebsite[] = [];
+
+/** CDI 计算计数器（每5分钟计算一次） */
+let cdiTimerCounter = 0;
+
+/** 生成文本的 trigram 集合 */
+function getTrigrams(text: string): Set<string> {
+  const trigrams = new Set<string>();
+  const normalized = text.toLowerCase().replace(/\s+/g, '');
+  for (let i = 0; i <= normalized.length - 3; i++) {
+    trigrams.add(normalized.substring(i, i + 3));
+  }
+  return trigrams;
+}
+
+/** 使用 trigram 方法计算两段文本的相似度 (0~1) */
+function calculateTrigramSimilarity(textA: string, textB: string): number {
+  const trigramsA = getTrigrams(textA);
+  const trigramsB = getTrigrams(textB);
+  if (trigramsA.size === 0 && trigramsB.size === 0) return 1;
+  if (trigramsA.size === 0 || trigramsB.size === 0) return 0;
+  let intersection = 0;
+  for (const t of trigramsA) {
+    if (trigramsB.has(t)) intersection++;
+  }
+  const union = trigramsA.size + trigramsB.size - intersection;
+  return union === 0 ? 0 : intersection / union;
+}
+
+/** 检查并授予徽章，返回新获得的徽章列表 */
+async function checkAndAwardBadges(): Promise<Badge[]> {
+  const earnedBadges = await getEarnedBadges();
+  const earnedIds = new Set(earnedBadges.map((b) => b.id));
+  const thoughtLogs = await getThoughtLogs();
+  const findFaultSubs = await getFindFaultSubmissions();
+  const wallBlocks = await getCognitiveWallBlocks();
+  const usageData = await getUsageData();
+
+  // 统计触发次数
+  let totalTriggers = 0;
+  for (const dayKey of Object.keys(usageData)) {
+    totalTriggers += (usageData[dayKey].triggers || []).length;
+  }
+
+  // 统计连续低使用天数
+  const today = new Date();
+  let consecutiveLowUsage = 0;
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const key = date.toISOString().split('T')[0];
+    const record = usageData[key];
+    if (record && record.total_seconds < 3600) {
+      consecutiveLowUsage++;
+    } else if (i > 0) {
+      break;
+    }
+  }
+
+  // 找茬平均分
+  const avgFindFaultScore = findFaultSubs.length > 0
+    ? findFaultSubs.reduce((sum, s) => sum + s.matchScore, 0) / findFaultSubs.length
+    : 0;
+
+  // 条件映射
+  const conditionValues: Record<string, number> = {
+    consecutive_low_usage_3: consecutiveLowUsage >= 3 ? 1 : 0,
+    consecutive_low_usage_7: consecutiveLowUsage >= 7 ? 1 : 0,
+    consecutive_low_usage_30: consecutiveLowUsage >= 30 ? 1 : 0,
+    thought_logs_10: thoughtLogs.length,
+    thought_logs_50: thoughtLogs.length,
+    thought_logs_200: thoughtLogs.length,
+    triggers_5: totalTriggers,
+    triggers_20: totalTriggers,
+    triggers_50: totalTriggers,
+    find_fault_3: findFaultSubs.length,
+    find_fault_10: findFaultSubs.length,
+    find_fault_30: findFaultSubs.length >= 30 && avgFindFaultScore > 70 ? 30 : findFaultSubs.length,
+    wall_blocks_5: wallBlocks.length,
+    wall_blocks_20: wallBlocks.length,
+    wall_blocks_50: wallBlocks.length,
+  };
+
+  const conditionTargets: Record<string, number> = {
+    consecutive_low_usage_3: 1,
+    consecutive_low_usage_7: 1,
+    consecutive_low_usage_30: 1,
+    thought_logs_10: 10,
+    thought_logs_50: 50,
+    thought_logs_200: 200,
+    triggers_5: 5,
+    triggers_20: 20,
+    triggers_50: 50,
+    find_fault_3: 3,
+    find_fault_10: 10,
+    find_fault_30: 30,
+    wall_blocks_5: 5,
+    wall_blocks_20: 20,
+    wall_blocks_50: 50,
+  };
+
+  const newlyEarned: Badge[] = [];
+
+  for (const def of BADGE_DEFINITIONS) {
+    if (earnedIds.has(def.id)) continue;
+    const value = conditionValues[def.condition] ?? 0;
+    const target = conditionTargets[def.condition] ?? 1;
+    if (value >= target) {
+      const badge: Badge = {
+        id: def.id,
+        name: def.name,
+        description: def.description,
+        icon: def.icon,
+        tier: def.tier,
+        condition: def.condition,
+        earned: true,
+        earnedAt: Date.now(),
+      };
+      await saveBadge(badge);
+      newlyEarned.push(badge);
+    }
+  }
+
+  return newlyEarned;
+}
 
 /** 加载 AI 网站配置 */
 async function loadAIWebsites(): Promise<void> {
@@ -143,6 +277,12 @@ chrome.runtime.onInstalled.addListener(async () => {
         biasAnalysisEnabled: true,
         targetRangeEnabled: true,
         preferredProvider: 'deepseek',
+        cognitiveWallEnabled: true,
+        cognitiveWallThreshold: 0.85,
+        autoScenarioDetection: true,
+        cloudSyncEnabled: false,
+        cloudServerUrl: '',
+        cloudAuthToken: '',
       },
     });
   }
@@ -187,6 +327,21 @@ async function handleTimerAlarm(): Promise<void> {
       if (triggerType) {
         // 对第一个活跃 AI 标签页触发
         await tryTrigger(activeAITabIds[0], triggerType);
+      }
+    }
+
+    // CDI 每5分钟计算一次
+    cdiTimerCounter++;
+    if (cdiTimerCounter >= 5) {
+      cdiTimerCounter = 0;
+      try {
+        const cdiRecord = await calculateCDI();
+        await broadcastToAITabs({
+          type: 'CDI_UPDATE',
+          payload: { cdi: cdiRecord.cdi, dimensions: cdiRecord.dimensions },
+        });
+      } catch (cdiErr) {
+        console.error('[EchoBreaker] CDI 计算出错:', cdiErr);
       }
     }
   } catch (err) {
@@ -318,6 +473,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleEvaluateFindFault(message.payload).then((result) => {
         sendResponse(result);
       });
+      return true;
+    }
+
+    // ============ L5 情境适应层消息 ============
+    case 'SCENARIO_CHANGED': {
+      handleScenarioChanged(message.payload).then(() => sendResponse({ ok: true }));
+      return true;
+    }
+
+    case 'COGNITIVE_WALL_CHECK': {
+      handleCognitiveWallCheck(message.payload).then((result) => sendResponse(result));
+      return true;
+    }
+
+    case 'COGNITIVE_WALL_BLOCKED': {
+      handleCognitiveWallBlocked(message.payload).then(() => sendResponse({ ok: true }));
+      return true;
+    }
+
+    // ============ L6 社群唤醒层消息 ============
+    case 'GET_CDI': {
+      handleGetCDI().then((result) => sendResponse(result));
+      return true;
+    }
+
+    case 'GET_BADGES': {
+      handleGetBadges().then((result) => sendResponse(result));
+      return true;
+    }
+
+    case 'SYNC_TO_CLOUD': {
+      handleSyncToCloud().then((result) => sendResponse(result));
       return true;
     }
 
@@ -527,7 +714,134 @@ async function handleEvaluateFindFault(
   return { success: false, error: result.error };
 }
 
+// ============ L5 处理函数 ============
+
+/** 处理场景变更消息 */
+async function handleScenarioChanged(
+  payload: Record<string, unknown> | undefined
+): Promise<void> {
+  const scenario = payload?.scenario ? String(payload.scenario) : 'default';
+  console.log('[EchoBreaker] 场景变更:', scenario);
+  await saveDetectedScenario(scenario);
+  await broadcastToAITabs({ type: 'SCENARIO_DETECTED', payload: { scenario } });
+}
+
+/** 处理认知墙检查消息 */
+async function handleCognitiveWallCheck(
+  payload: Record<string, unknown> | undefined
+): Promise<{ blocked: boolean; similarity: number }> {
+  const userText = payload?.userText ? String(payload.userText) : '';
+  const aiText = payload?.aiText ? String(payload.aiText) : '';
+  const scenario = (payload?.scenario as Scenario) || 'default';
+
+  const similarity = calculateTrigramSimilarity(userText, aiText);
+
+  const settings = await getSettings();
+  const strategy = SCENARIO_STRATEGIES[scenario] || SCENARIO_STRATEGIES.default;
+  const threshold = settings.cognitiveWallEnabled
+    ? settings.cognitiveWallThreshold
+    : strategy.similarityThreshold;
+
+  const blocked = similarity >= threshold;
+
+  if (blocked) {
+    const block: CognitiveWallBlock = {
+      id: `wall_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+      timestamp: Date.now(),
+      scenario,
+      similarity,
+      userText: userText.substring(0, 200),
+      aiText: aiText.substring(0, 200),
+      action: 'blocked',
+    };
+    await saveCognitiveWallBlock(block);
+  }
+
+  return { blocked, similarity };
+}
+
+/** 处理认知墙拦截记录保存消息 */
+async function handleCognitiveWallBlocked(
+  payload: Record<string, unknown> | undefined
+): Promise<void> {
+  if (!payload) return;
+  const block: CognitiveWallBlock = {
+    id: (payload.id as string) || `wall_${Date.now()}`,
+    timestamp: (payload.timestamp as number) || Date.now(),
+    scenario: (payload.scenario as Scenario) || 'default',
+    similarity: (payload.similarity as number) || 0,
+    userText: (payload.userText as string) || '',
+    aiText: (payload.aiText as string) || '',
+    action: (payload.action as CognitiveWallBlock['action']) || 'blocked',
+  };
+  await saveCognitiveWallBlock(block);
+}
+
+// ============ L6 处理函数 ============
+
+/** 处理获取 CDI 数据请求 */
+async function handleGetCDI(): Promise<{ current: import('../lib/types').CDIRecord; history: import('../lib/types').CDIRecord[] }> {
+  const current = await calculateCDI();
+  const history = await getRecentCDI(30);
+  return { current, history };
+}
+
+/** 处理获取徽章请求 */
+async function handleGetBadges(): Promise<{ badges: Badge[] }> {
+  await checkAndAwardBadges();
+  const badges = await getEarnedBadges();
+  return { badges };
+}
+
+/** 处理云端同步请求 */
+async function handleSyncToCloud(): Promise<{ success: boolean; error?: string }> {
+  const settings = await getSettings();
+  if (!settings.cloudSyncEnabled) {
+    return { success: false, error: '云端同步未启用' };
+  }
+
+  const cloudServerUrl = settings.cloudServerUrl;
+  const cloudAuthToken = settings.cloudAuthToken;
+
+  if (!cloudServerUrl) {
+    return { success: false, error: '未配置云端服务地址' };
+  }
+
+  try {
+    const usageData = await getUsageData();
+    const thoughtLogs = await getThoughtLogs();
+    const findFaultSubs = await getFindFaultSubmissions();
+    const wallBlocks = await getCognitiveWallBlocks();
+    const badges = await getEarnedBadges();
+
+    const response = await fetch(`${cloudServerUrl}/api/sync/full`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cloudAuthToken}`,
+      },
+      body: JSON.stringify({
+        usageData,
+        thoughtLogs,
+        findFaultSubmissions: findFaultSubs,
+        cognitiveWallBlocks: wallBlocks,
+        badges,
+        syncedAt: Date.now(),
+      }),
+    });
+
+    if (!response.ok) {
+      return { success: false, error: `同步失败: HTTP ${response.status}` };
+    }
+
+    return { success: true };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    return { success: false, error: `同步出错: ${errorMsg}` };
+  }
+}
+
 // 初始化时加载配置
 loadAIWebsites();
 
-console.log('[EchoBreaker] Background Service Worker 已启动（v2.0 - 含L2/L3/L4支持）');
+console.log('[EchoBreaker] Background Service Worker 已启动（v2.0 - 含L2/L3/L4/L5/L6支持）');

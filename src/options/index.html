@@ -288,6 +288,107 @@
       </div>
     </section>
 
+    <!-- ==================== 6. 情境适应 (L5) ==================== -->
+    <section style="margin-bottom: 36px;">
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
+        情境适应 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L5</span>
+      </h2>
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 16px 20px;">
+        <!-- 场景自动识别 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
+          <div>
+            <div style="font-size: 14px; color: #2c3e50;">场景自动识别</div>
+            <div style="font-size: 12px; color: #7f8c9b;">根据访问的网站自动切换干预策略</div>
+          </div>
+          <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+            <input type="checkbox" id="toggle-autoScenarioDetection" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
+            <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
+          </label>
+        </div>
+        <!-- 默认场景 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
+          <div>
+            <div style="font-size: 14px; color: #2c3e50;">默认场景</div>
+            <div style="font-size: 12px; color: #7f8c9b;">手动选择干预场景模式</div>
+          </div>
+          <select id="select-scenario" style="background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 6px 12px; color: #2c3e50; font-size: 13px; outline: none; cursor: pointer;">
+            <option value="default">默认模式</option>
+            <option value="thesis">论文写作</option>
+            <option value="homework">日常作业</option>
+            <option value="reading">文献阅读</option>
+            <option value="exam">考试复习</option>
+          </select>
+        </div>
+        <!-- 认知墙 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
+          <div>
+            <div style="font-size: 14px; color: #2c3e50;">认知墙 <span style="font-size: 11px; color: #e05555; background: rgba(224,85,85,0.1); padding: 1px 6px; border-radius: 4px;">L5</span></div>
+            <div style="font-size: 12px; color: #7f8c9b;">阻止粘贴与AI回复高度相似的内容</div>
+          </div>
+          <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+            <input type="checkbox" id="toggle-cognitiveWallEnabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
+            <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
+          </label>
+        </div>
+        <!-- 相似度阈值 -->
+        <div style="padding: 10px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="font-size: 14px; color: #2c3e50;">相似度阈值</div>
+            <span id="threshold-display" style="font-size: 13px; color: #5b9bd5;">85%</span>
+          </div>
+          <input type="range" id="input-cognitiveWallThreshold" min="50" max="99" value="85" style="width: 100%; accent-color: #5b9bd5;" />
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #7f8c9b;">
+            <span>宽松 (50%)</span>
+            <span>严格 (99%)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 7. 云端同步 (L6/B端) ==================== -->
+    <section style="margin-bottom: 36px;">
+      <h2 style="font-size: 18px; font-weight: 600; color: #e8a838; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+        <span style="width: 4px; height: 20px; background: #e8a838; border-radius: 2px; display: inline-block;"></span>
+        云端同步 <span style="font-size: 11px; color: #5b9bd5; background: rgba(91,155,213,0.1); padding: 1px 6px; border-radius: 4px;">L6</span>
+      </h2>
+      <div style="background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-radius: 12px; padding: 16px 20px;">
+        <!-- 启用云端同步 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #dce6f0;">
+          <div>
+            <div style="font-size: 14px; color: #2c3e50;">启用云端同步</div>
+            <div style="font-size: 12px; color: #7f8c9b;">将数据同步到教师端后台</div>
+          </div>
+          <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+            <input type="checkbox" id="toggle-cloudSyncEnabled" class="toggle-switch" style="opacity: 0; width: 0; height: 0; position: absolute;" />
+            <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #dce6f0; border-radius: 12px; transition: background 0.3s;"></span>
+            <span class="toggle-knob" style="position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s;"></span>
+          </label>
+        </div>
+        <!-- 服务器地址 -->
+        <div style="padding: 10px 0; border-bottom: 1px solid #dce6f0;">
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">服务器地址</label>
+          <input type="text" id="input-cloudServerUrl" placeholder="http://localhost:3001" style="width: 100%; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+        </div>
+        <!-- 认证 Token -->
+        <div style="padding: 10px 0;">
+          <label style="font-size: 12px; color: #7f8c9b; display: block; margin-bottom: 6px;">认证 Token</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="password" id="input-cloudAuthToken" placeholder="登录后自动获取" style="flex: 1; box-sizing: border-box; background: #f7fafd; border: 1px solid #dce6f0; border-radius: 8px; padding: 8px 12px; color: #2c3e50; font-size: 13px; outline: none; transition: border-color 0.2s;" />
+            <button id="cloud-login-btn" style="background: rgba(91,155,213,0.15); color: #5b9bd5; border: 1px solid rgba(91,155,213,0.4); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; white-space: nowrap;">登录</button>
+          </div>
+        </div>
+        <!-- 同步状态 -->
+        <div id="sync-status" style="font-size: 12px; color: #7f8c9b; margin-top: 8px;"></div>
+        <!-- 手动同步按钮 -->
+        <div style="margin-top: 12px;">
+          <button id="manual-sync-btn" style="background: rgba(76,175,125,0.1); color: #4caf7d; border: 1px solid rgba(76,175,125,0.3); border-radius: 8px; padding: 8px 20px; font-size: 13px; cursor: pointer;">立即同步</button>
+        </div>
+      </div>
+    </section>
+
     <!-- 底部提示 -->
     <footer style="text-align: center; padding: 16px 0; border-top: 1px solid #dce6f0;">
       <p style="font-size: 12px; color: #7f8c9b; margin: 0;">回声破除者 · 认知抗阻伴学插件 · 设置页面</p>

@@ -59,6 +59,21 @@
     </div>
   </section>
 
+  <!-- 认知依赖指数 (CDI) -->
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #e8a838; margin-bottom: 8px;">认知依赖指数 (CDI)</h2>
+    <div style="background: #ffffff; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #dce6f0;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <div>
+          <span id="cdi-value" style="font-size: 28px; font-weight: bold; color: #5b9bd5;">--</span>
+          <span style="font-size: 12px; color: #7f8c9b; margin-left: 4px;">/100</span>
+        </div>
+        <span id="cdi-level" style="font-size: 12px; padding: 2px 8px; border-radius: 10px; background: rgba(76,175,125,0.1); color: #4caf7d;">独立思考</span>
+      </div>
+      <div id="cdi-chart" style="width: 100%; height: 100px;"></div>
+    </div>
+  </section>
+
   <!-- 本周趋势图 -->
   <section style="margin-bottom: 16px;">
     <h2 style="font-size: 14px; font-weight: 600; color: #e8a838; margin-bottom: 8px;">本周趋势</h2>
@@ -110,6 +125,14 @@
     </div>
   </section>
 
+  <!-- 我的徽章 -->
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #e8a838; margin-bottom: 8px;">我的徽章</h2>
+    <div id="badges-container" style="background: #ffffff; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #dce6f0; display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px;">
+      <span style="font-size: 12px; color: #7f8c9b;">加载中...</span>
+    </div>
+  </section>
+
   <!-- 底部操作栏 -->
   <footer style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #7f8c9b; margin-top: 8px;">
     <span id="version-text">v0.4.2</span>
@@ -117,6 +140,7 @@
       <button id="refresh-btn" style="color: #4caf7d; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">🔄 刷新</button>
       <button id="export-btn" style="color: #5b9bd5; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">导出日志</button>
       <button id="clear-btn" style="color: #e05555; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">清除数据</button>
+      <button id="scenario-btn" style="color: #e8a838; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">📍 场景</button>
       <button id="settings-btn" style="color: #5b9bd5; text-decoration: none; background: none; border: none; cursor: pointer; font-size: 12px;">设置</button>
     </div>
   </footer>
