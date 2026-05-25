@@ -48,8 +48,6 @@
     <button
       id="save-thought-btn"
       style="width:100%;margin-top:14px;padding:10px;background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;"
-      onmouseover="this.style.opacity='0.85'"
-      onmouseout="this.style.opacity='1'"
     >
       保存想法
     </button>
@@ -64,8 +62,6 @@
     <button
       id="request-analysis-btn"
       style="width:100%;padding:10px;background:rgba(129,140,248,0.15);color:#818cf8;border:1px solid rgba(129,140,248,0.3);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;"
-      onmouseover="this.style.background='rgba(129,140,248,0.25)'"
-      onmouseout="this.style.background='rgba(129,140,248,0.15)'"
     >
       请求偏差分析
     </button>
@@ -123,6 +119,12 @@
     }
     textarea:focus, input:focus {
       border-color: #818cf8 !important;
+    }
+    #save-thought-btn:hover {
+      opacity: 0.85;
+    }
+    #request-analysis-btn:hover {
+      background: rgba(129,140,248,0.25);
     }
   </style>
 
