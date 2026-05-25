@@ -11,6 +11,8 @@ module.exports = (env, argv) => {
       content: './src/content/index.ts',
       popup: './src/popup/index.ts',
       sidepanel: './src/sidepanel/index.ts',
+      options: './src/options/index.ts',
+      target: './src/target/index.ts',
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -42,6 +44,8 @@ module.exports = (env, argv) => {
           { from: 'manifest.json', to: 'manifest.json' },
           { from: 'src/popup/index.html', to: 'popup.html' },
           { from: 'src/sidepanel/index.html', to: 'sidepanel.html' },
+          { from: 'src/options/index.html', to: 'options.html' },
+          { from: 'src/target/index.html', to: 'target.html' },
           { from: 'public/icons', to: 'icons' },
           { from: 'data', to: 'data' },
         ],

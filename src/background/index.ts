@@ -1,7 +1,7 @@
 // 回声破除者 - Background Service Worker
 
 import { THRESHOLDS, STORAGE_KEYS, ALARM_NAMES } from '../lib/constants';
-import type { AIWebsite, DailyRecord, TriggerType } from '../lib/types';
+import type { AIWebsite, DailyRecord, TriggerType, BiasAnalysis } from '../lib/types';
 import {
   getUsageData,
   getTodayRecord,
@@ -16,7 +16,12 @@ import {
   getSettings,
   getLastTriggerTime,
   setLastTriggerTime,
+  getTodayApiCallCount,
+  saveThoughtLog,
+  updateThoughtLog,
+  getThoughtLogs,
 } from '../lib/storage';
+import { callLLM, generateGuidedPrompt, analyzeBias, evaluateFindFault } from '../lib/llm';
 
 /** 已加载的 AI 网站配置列表 */
 let aiWebsites: AIWebsite[] = [];
@@ -92,6 +97,29 @@ async function tryTrigger(tabId: number, triggerType: TriggerType): Promise<void
   }
 }
 
+/** 向指定标签页发送消息（安全封装） */
+async function sendTabMessage(tabId: number, message: Record<string, unknown>): Promise<void> {
+  try {
+    await chrome.tabs.sendMessage(tabId, message);
+  } catch {
+    // 标签页可能已关闭
+  }
+}
+
+/** 向所有 AI 网站标签页广播消息 */
+async function broadcastToAITabs(message: Record<string, unknown>): Promise<void> {
+  try {
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.url && isAIWebsite(tab.url) && tab.id) {
+        await sendTabMessage(tab.id, message);
+      }
+    }
+  } catch (err) {
+    console.error('[EchoBreaker] 广播消息出错:', err);
+  }
+}
+
 /** 插件安装时初始化 */
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('[EchoBreaker] 插件已安装/更新');
@@ -110,6 +138,11 @@ chrome.runtime.onInstalled.addListener(async () => {
         scenario: 'default',
         dataUploadConsent: false,
         dailyApiLimit: THRESHOLDS.DAILY_API_LIMIT,
+        guidedModeEnabled: true,
+        forceThoughtInput: true,
+        biasAnalysisEnabled: true,
+        targetRangeEnabled: true,
+        preferredProvider: 'deepseek',
       },
     });
   }
@@ -180,11 +213,11 @@ async function handlePauseRemindAlarm(): Promise<void> {
   }
 }
 
-/** 监听来自 Content Script 的消息 */
+/** 监听来自 Content Script 和其他页面的消息 */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
+    // ============ L0/L1 基础消息 ============
     case 'GET_SITE_CONFIG': {
-      // 根据发送者标签页的 URL 返回匹配的网站配置
       const tabUrl = sender.tab?.url || '';
       const config = matchSiteConfig(tabUrl);
       sendResponse(config);
@@ -192,62 +225,120 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     case 'USER_ACTIVE': {
-      // 用户活跃，累加活跃时长
       handleUserActive();
       sendResponse({ ok: true });
       return false;
     }
 
     case 'USER_PASTED': {
-      // 用户粘贴，增加计数
       handleUserPasted();
       sendResponse({ ok: true });
       return false;
     }
 
     case 'USER_SENT_QUESTION': {
-      // 用户发送问题
       handleUserQuestion(sender.tab?.id);
       sendResponse({ ok: true });
       return false;
     }
 
     case 'TRIGGER_DISMISSED': {
-      // 用户选择"继续使用"，记录 dismissed，重置连续轮数
       handleTriggerDismissed();
       sendResponse({ ok: true });
       return false;
     }
 
     case 'TRIGGER_PAUSED': {
-      // 用户选择"暂停思考"，记录 paused，重置连续轮数，设置5分钟后提醒
       handleTriggerPaused();
       sendResponse({ ok: true });
       return false;
     }
 
     case 'GET_TODAY_DATA': {
-      // 返回今日数据
       getTodayRecord().then(sendResponse);
-      return true; // 异步响应
+      return true;
     }
 
     case 'GET_WEEKLY_DATA': {
-      // 返回最近7天数据（格式化供 Popup 使用）
       handleGetWeeklyData().then(sendResponse);
-      return true; // 异步响应
+      return true;
     }
 
     case 'CHECK_CURRENT_SITE': {
-      // Popup 查询当前标签页是否为 AI 网站
       handleCheckCurrentSite().then(sendResponse);
       return true;
     }
 
     case 'CLEAR_TODAY_DATA': {
-      // 清除今日数据
       handleClearTodayData().then(() => sendResponse({ success: true }));
       return true;
+    }
+
+    // ============ L2 延迟满足层消息 ============
+    case 'GUIDED_MODE_TRIGGERED': {
+      // 引导模式被切换
+      console.log('[EchoBreaker] 引导教育模式切换:', message.payload);
+      sendResponse({ ok: true });
+      return false;
+    }
+
+    case 'REQUEST_GUIDED_PROMPT': {
+      // 请求 LLM 生成个性化引导 Prompt
+      handleRequestGuidedPrompt(message.payload, sender.tab?.id).then((result) => {
+        sendResponse(result);
+      });
+      return true;
+    }
+
+    // ============ L3 元认知外显层消息 ============
+    case 'THOUGHT_LOG_SAVED': {
+      // 思考日志已保存
+      console.log('[EchoBreaker] 思考日志已保存:', message.payload?.thoughtLogId);
+      sendResponse({ ok: true });
+      return false;
+    }
+
+    case 'REQUEST_BIAS_ANALYSIS': {
+      // 请求偏差分析
+      handleRequestBiasAnalysis(message.payload).then((result) => {
+        sendResponse(result);
+      });
+      return true;
+    }
+
+    case 'GET_THOUGHT_LOGS': {
+      // 获取思考日志列表
+      getThoughtLogs().then((logs) => sendResponse({ logs }));
+      return true;
+    }
+
+    // ============ L4 逆向重构层消息 ============
+    case 'EVALUATE_FIND_FAULT': {
+      // 评估找茬提交
+      handleEvaluateFindFault(message.payload).then((result) => {
+        sendResponse(result);
+      });
+      return true;
+    }
+
+    // ============ 通用消息 ============
+    case 'GET_API_CALL_COUNT': {
+      getTodayApiCallCount().then((count) => sendResponse({ count }));
+      return true;
+    }
+
+    case 'OPEN_TARGET_RANGE': {
+      // 打开靶场页面
+      chrome.tabs.create({ url: chrome.runtime.getURL('target.html') });
+      sendResponse({ ok: true });
+      return false;
+    }
+
+    case 'OPEN_SETTINGS': {
+      // 打开设置页面
+      chrome.runtime.openOptionsPage();
+      sendResponse({ ok: true });
+      return false;
     }
   }
 
@@ -354,7 +445,89 @@ async function handleClearTodayData(): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.USAGE_DATA]: usageData });
 }
 
+// ============ L2 处理函数 ============
+
+/** 处理请求引导 Prompt */
+async function handleRequestGuidedPrompt(
+  payload: Record<string, unknown> | undefined,
+  tabId?: number
+): Promise<{ success: boolean; prompt?: string; error?: string }> {
+  if (!payload?.question) {
+    return { success: false, error: '缺少问题参数' };
+  }
+
+  const userQuestion = String(payload.question);
+  const context = payload.context ? String(payload.context) : '';
+
+  const result = await generateGuidedPrompt(userQuestion, context);
+
+  if (result.success && result.text && tabId) {
+    // 将结果发送回 content script
+    await sendTabMessage(tabId, {
+      type: 'GUIDED_PROMPT_RESULT',
+      payload: { prompt: result.text },
+    });
+  }
+
+  return { success: result.success, prompt: result.text, error: result.success ? undefined : result.text };
+}
+
+// ============ L3 处理函数 ============
+
+/** 处理请求偏差分析 */
+async function handleRequestBiasAnalysis(
+  payload: Record<string, unknown> | undefined
+): Promise<{ success: boolean; analysis?: BiasAnalysis; error?: string }> {
+  if (!payload?.myThought || !payload?.aiAnswer) {
+    return { success: false, error: '缺少必要参数（myThought, aiAnswer）' };
+  }
+
+  const myThought = String(payload.myThought);
+  const aiAnswer = String(payload.aiAnswer);
+  const question = payload.question ? String(payload.question) : '';
+  const thoughtLogId = payload.thoughtLogId ? String(payload.thoughtLogId) : '';
+
+  const result = await analyzeBias(myThought, aiAnswer, question);
+
+  if (result.success && result.analysis) {
+    // 更新对应的思考日志
+    if (thoughtLogId) {
+      await updateThoughtLog(thoughtLogId, { biasAnalysis: result.analysis });
+    }
+    return { success: true, analysis: result.analysis };
+  }
+
+  return { success: false, error: result.error };
+}
+
+// ============ L4 处理函数 ============
+
+/** 处理找茬评估 */
+async function handleEvaluateFindFault(
+  payload: Record<string, unknown> | undefined
+): Promise<{ success: boolean; score?: number; feedback?: string; error?: string }> {
+  if (!payload?.targetContent || !payload?.userHighlights) {
+    return { success: false, error: '缺少必要参数' };
+  }
+
+  const targetContent = String(payload.targetContent);
+  const userHighlights = payload.userHighlights as string[];
+  const weakPoints = (payload.weakPoints as string[]) || [];
+
+  const result = await evaluateFindFault(targetContent, userHighlights, weakPoints);
+
+  if (result.success) {
+    return {
+      success: true,
+      score: result.matchScore,
+      feedback: result.feedback,
+    };
+  }
+
+  return { success: false, error: result.error };
+}
+
 // 初始化时加载配置
 loadAIWebsites();
 
-console.log('[EchoBreaker] Background Service Worker 已启动');
+console.log('[EchoBreaker] Background Service Worker 已启动（v2.0 - 含L2/L3/L4支持）');

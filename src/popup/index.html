@@ -61,6 +61,33 @@
     </div>
   </section>
 
+  <!-- 功能入口 -->
+  <section style="margin-bottom: 16px;">
+    <h2 style="font-size: 14px; font-weight: 600; color: #f59e0b; margin-bottom: 8px;">训练工具</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+      <button id="guided-mode-btn" style="background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 12px; padding: 12px 8px; cursor: pointer; text-align: center; color: white; font-size: 12px;">
+        <div style="font-size: 20px; margin-bottom: 4px;">🧠</div>
+        <div style="color: #a5b4fc;">引导模式</div>
+        <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">L2 延迟满足</div>
+      </button>
+      <button id="thought-log-btn" style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 12px 8px; cursor: pointer; text-align: center; color: white; font-size: 12px;">
+        <div style="font-size: 20px; margin-bottom: 4px;">📝</div>
+        <div style="color: #fbbf24;">思考日志</div>
+        <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">L3 元认知</div>
+      </button>
+      <button id="target-range-btn" style="background: rgba(244,114,182,0.15); border: 1px solid rgba(244,114,182,0.3); border-radius: 12px; padding: 12px 8px; cursor: pointer; text-align: center; color: white; font-size: 12px;">
+        <div style="font-size: 20px; margin-bottom: 4px;">🎯</div>
+        <div style="color: #f472b6;">AI靶场</div>
+        <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">L4 逆向重构</div>
+      </button>
+      <button id="api-count-btn" style="background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); border-radius: 12px; padding: 12px 8px; cursor: pointer; text-align: center; color: white; font-size: 12px;">
+        <div style="font-size: 20px; margin-bottom: 4px;">📊</div>
+        <div id="api-count-display" style="color: #4ade80;">API: 0/50</div>
+        <div style="font-size: 10px; color: #6b7280; margin-top: 2px;">今日调用</div>
+      </button>
+    </div>
+  </section>
+
   <!-- 底部操作栏 -->
   <footer style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #6b7280; margin-top: 8px;">
     <span id="version-text">v0.4.2</span>

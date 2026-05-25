@@ -26,7 +26,39 @@ export const STORAGE_KEYS = {
   TRIGGER_LOG: 'echo_breaker_triggers',
   AI_WEBSITES: 'echo_breaker_websites',
   LAST_TRIGGER_TIME: 'echo_breaker_last_trigger',
+  /** LLM API 配置（各供应商的 key 和 base URL） */
+  LLM_CONFIGS: 'echo_breaker_llm_configs',
+  /** 会员信息 */
+  MEMBERSHIP: 'echo_breaker_membership',
+  /** 思考日志 */
+  THOUGHT_LOGS: 'echo_breaker_thought_logs',
+  /** 靶子文本库 */
+  TARGET_TEXTS: 'echo_breaker_target_texts',
+  /** 找茬提交记录 */
+  FIND_FAULT_SUBMISSIONS: 'echo_breaker_find_fault',
+  /** 证据链导图 */
+  EVIDENCE_MAPS: 'echo_breaker_evidence_maps',
 } as const;
+
+/** LLM 供应商默认配置 */
+export const LLM_PROVIDER_DEFAULTS: Record<string, { baseUrl: string; model: string }> = {
+  deepseek: {
+    baseUrl: 'https://api.deepseek.com/v1',
+    model: 'deepseek-chat',
+  },
+  zhipu: {
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    model: 'glm-4-flash',
+  },
+  qwen: {
+    baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    model: 'qwen-turbo',
+  },
+  custom: {
+    baseUrl: '',
+    model: '',
+  },
+};
 
 /** 场景与干预模式映射 */
 export const SCENARIO_MODE_MAP: Record<string, string> = {

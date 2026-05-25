@@ -399,6 +399,51 @@ async function openSidePanel(): Promise<void> {
   }
 }
 
+/** 更新 API 调用计数显示 */
+async function updateApiCount(): Promise<void> {
+  try {
+    const result: any = await chrome.runtime.sendMessage({ type: 'GET_API_CALL_COUNT' });
+    const count = result?.count || 0;
+    const settings = await chrome.runtime.sendMessage({ type: 'GET_TODAY_DATA' });
+    const el = document.getElementById('api-count-display');
+    if (el) {
+      el.textContent = `API: ${count}/50`;
+    }
+  } catch {
+    // 忽略
+  }
+}
+
+/** 打开靶场页面 */
+async function openTargetRange(): Promise<void> {
+  try {
+    await chrome.runtime.sendMessage({ type: 'OPEN_TARGET_RANGE' });
+    window.close();
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 打开靶场失败:', err);
+  }
+}
+
+/** 打开设置页面 */
+async function openOptionsPage(): Promise<void> {
+  try {
+    await chrome.runtime.sendMessage({ type: 'OPEN_SETTINGS' });
+    window.close();
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 打开设置失败:', err);
+  }
+}
+
+/** 切换引导模式 */
+async function toggleGuidedMode(): Promise<void> {
+  try {
+    // 通过 sidepanel 打开思考日志
+    await openSidePanel();
+  } catch (err) {
+    console.error('[EchoBreaker Popup] 切换引导模式失败:', err);
+  }
+}
+
 /** 主初始化函数 */
 async function init(): Promise<void> {
   setVersion();
@@ -419,13 +464,21 @@ async function init(): Promise<void> {
 
   // 然后获取数据并更新
   await updateDashboard();
+  await updateApiCount();
 
-  document.getElementById('settings-btn')?.addEventListener('click', openSidePanel);
+  document.getElementById('settings-btn')?.addEventListener('click', openOptionsPage);
   document.getElementById('clear-btn')?.addEventListener('click', clearTodayData);
   document.getElementById('export-btn')?.addEventListener('click', exportLogs);
   document.getElementById('refresh-btn')?.addEventListener('click', updateDashboard);
+  document.getElementById('guided-mode-btn')?.addEventListener('click', toggleGuidedMode);
+  document.getElementById('thought-log-btn')?.addEventListener('click', openSidePanel);
+  document.getElementById('target-range-btn')?.addEventListener('click', openTargetRange);
+  document.getElementById('api-count-btn')?.addEventListener('click', openOptionsPage);
 
-  refreshTimer = setInterval(updateDashboard, 30000);
+  refreshTimer = setInterval(() => {
+    updateDashboard();
+    updateApiCount();
+  }, 30000);
 }
 
 init();

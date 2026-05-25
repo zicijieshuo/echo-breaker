@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "回声破除者",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "认知抗阻伴学插件 - 在使用AI时保持独立思考",
   "permissions": [
     "storage",
@@ -17,7 +17,10 @@
     "https://*.yiyan.baidu.com/*",
     "https://*.tongyi.aliyun.com/*",
     "https://*.doubao.com/*",
-    "https://*.claude.ai/*"
+    "https://*.claude.ai/*",
+    "https://api.deepseek.com/*",
+    "https://open.bigmodel.cn/*",
+    "https://dashscope.aliyuncs.com/*"
   ],
   "background": {
     "service_worker": "background.js",
@@ -51,6 +54,10 @@
   },
   "side_panel": {
     "default_path": "sidepanel.html"
+  },
+  "options_page": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "icons": {
     "16": "icons/icon16.png",
