@@ -14,6 +14,9 @@ let siteConfig: AIWebsite | null = null;
 /** 引导教育模式状态 */
 let isGuidedMode = false;
 
+/** 是否已显示过新手教程 */
+let hasShownTutorial = false;
+
 /** 长按定时器 */
 let longPressTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -418,7 +421,105 @@ function enterGuidedMode(): void {
   // 修改发送按钮样式
   applyGuidedButtonStyles();
 
+  // 首次开启时显示新手教程
+  if (!hasShownTutorial) {
+    showTutorial();
+  }
+
   console.log('[EchoBreaker-L2] 引导教育模式已开启');
+}
+
+/** 显示新手教程弹窗 */
+function showTutorial(): void {
+  hasShownTutorial = true;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'echo-breaker-tutorial-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  `;
+
+  const card = document.createElement('div');
+  card.style.cssText = `
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 24px 20px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    color: #2c3e50;
+  `;
+
+  card.innerHTML = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="font-size: 40px; margin-bottom: 8px;">🧠</div>
+      <h2 style="margin: 0 0 4px; font-size: 18px; font-weight: 700; color: #2c3e50;">引导教育模式</h2>
+      <p style="margin: 0; font-size: 13px; color: #7f8c9b;">让 AI 成为你的思维教练，而不是答案机器</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div style="min-width: 32px; height: 32px; background: rgba(91,155,213,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">1</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 2px;">正常输入你的问题</div>
+          <div style="font-size: 12px; color: #7f8c9b;">像平时一样在输入框中输入你想问的问题</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div style="min-width: 32px; height: 32px; background: rgba(232,168,56,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">2</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 2px;">发送时自动转换为引导提问</div>
+          <div style="font-size: 12px; color: #7f8c9b;">你的问题会被改写为"思维教练"提示词，AI 将通过反问引导你思考，而不是直接给答案</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div style="min-width: 32px; height: 32px; background: rgba(76,175,125,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">3</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 2px;">跟随引导，深入思考</div>
+          <div style="font-size: 12px; color: #7f8c9b;">AI 会指出你可能忽略的细节、要求你提取关键词、追问概念辨析——帮你真正理解问题</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: rgba(91,155,213,0.06); border: 1px solid rgba(91,155,213,0.15); border-radius: 10px; padding: 12px; margin-bottom: 20px;">
+      <div style="font-size: 12px; font-weight: 600; color: #5b9bd5; margin-bottom: 4px;">💡 小提示</div>
+      <div style="font-size: 12px; color: #7f8c9b; line-height: 1.5;">
+        你也可以<strong style="color: #3a7cc3;">长按发送按钮 3 秒</strong>来开启/关闭引导模式。顶部蓝色标签可随时关闭此模式。
+      </div>
+    </div>
+
+    <button id="echo-breaker-tutorial-close" style="
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #5b9bd5, #3a7cc3);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    ">我知道了，开始使用</button>
+  `;
+
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+
+  const closeTutorial = () => {
+    overlay.remove();
+  };
+
+  card.querySelector('#echo-breaker-tutorial-close')?.addEventListener('click', closeTutorial);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeTutorial();
+  });
 }
 
 /** 给所有发送按钮添加引导模式样式 */

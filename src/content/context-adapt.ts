@@ -117,7 +117,7 @@ export async function applyScenarioStrategy(strategy: ScenarioStrategy): Promise
     const adjustedConsecutive = Math.max(1, Math.round(settings.consecutiveThreshold * strategy.triggerMultiplier));
 
     // 构建需要更新的设置
-    const updates: Record<string, unknown> = {
+    const updates: Partial<import('../lib/types').UserSettings> = {
       durationThreshold: adjustedDuration,
       consecutiveThreshold: adjustedConsecutive,
     };
@@ -145,7 +145,7 @@ export async function applyScenarioStrategy(strategy: ScenarioStrategy): Promise
     }
 
     // 保存更新后的设置
-    await saveSettings(updates as Partial<typeof settings>);
+    await saveSettings(updates);
 
     // 通知 background 场景已变更
     sendMessage('SCENARIO_CHANGED', {
@@ -156,9 +156,16 @@ export async function applyScenarioStrategy(strategy: ScenarioStrategy): Promise
     });
 
     console.log(`[EchoBreaker-L5] 已应用场景策略: ${strategy.scenario} (${strategy.mode})`);
-  } catch {
-    // 存储操作失败时静默处理
-    console.warn('[EchoBreaker-L5] 应用场景策略时存储操作失败');
+  } catch (err) {
+    // 存储操作失败时静默处理，不影响核心功能
+    console.warn('[EchoBreaker-L5] 应用场景策略时存储操作失败，策略已在内存中生效');
+    // 即使存储失败，策略仍在内存中生效
+    sendMessage('SCENARIO_CHANGED', {
+      scenario: strategy.scenario,
+      mode: strategy.mode,
+      triggerMultiplier: strategy.triggerMultiplier,
+      promptStyle: strategy.promptStyle,
+    });
   }
 }
 

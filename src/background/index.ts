@@ -527,6 +527,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ ok: true });
       return false;
     }
+
+    case 'TOGGLE_GUIDED_MODE_BROADCAST': {
+      // Popup 请求转发引导模式切换到所有 AI 标签页
+      broadcastToAITabs({ type: 'TOGGLE_GUIDED_MODE' }).then(() => {
+        sendResponse({ ok: true });
+      });
+      return true;
+    }
   }
 
   return false;

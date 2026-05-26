@@ -83,7 +83,7 @@ function initWeeklyChart(dates: string[], minutes: number[]): void {
       trigger: 'axis',
       backgroundColor: 'rgba(240,245,250,0.9)',
       borderColor: 'rgba(58,124,195,0.3)',
-      textStyle: { color: '#fff', fontSize: 12 },
+      textStyle: { color: '#2c3e50', fontSize: 12 },
     },
     series: [{
       type: 'bar',
@@ -141,11 +141,11 @@ function initRatioChart(questions: number, copies: number): void {
       trigger: 'item',
       backgroundColor: 'rgba(240,245,250,0.9)',
       borderColor: 'rgba(58,124,195,0.3)',
-      textStyle: { color: '#fff', fontSize: 12 },
+      textStyle: { color: '#2c3e50', fontSize: 12 },
     } : undefined,
     legend: hasData ? {
       bottom: 4,
-      textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 },
+      textStyle: { color: '#2c3e50', fontSize: 10 },
       itemWidth: 10,
       itemHeight: 10,
       itemGap: 16,
@@ -233,7 +233,7 @@ function initHourlyChart(hourlyData: number[]): void {
       trigger: 'axis',
       backgroundColor: 'rgba(240,245,250,0.9)',
       borderColor: 'rgba(58,124,195,0.3)',
-      textStyle: { color: '#fff', fontSize: 12 },
+      textStyle: { color: '#2c3e50', fontSize: 12 },
     },
     series: [{
       type: 'bar',
@@ -304,7 +304,7 @@ function initCDIChart(history: { date: string; cdi: number }[]): void {
       trigger: 'axis',
       backgroundColor: 'rgba(240,245,250,0.9)',
       borderColor: 'rgba(58,124,195,0.3)',
-      textStyle: { color: '#fff', fontSize: 12 },
+      textStyle: { color: '#2c3e50', fontSize: 12 },
     },
     series: [{
       type: 'line',
@@ -606,9 +606,16 @@ async function toggleGuidedMode(): Promise<void> {
     // 向当前活跃的 AI 网站标签页发送引导模式切换消息
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab?.id) {
-      await chrome.tabs.sendMessage(tab.id, {
-        type: 'TOGGLE_GUIDED_MODE',
-      });
+      try {
+        await chrome.tabs.sendMessage(tab.id, {
+          type: 'TOGGLE_GUIDED_MODE',
+        });
+      } catch {
+        // 当前标签页可能不是 AI 网站（没有内容脚本），通过 background 转发
+        await chrome.runtime.sendMessage({
+          type: 'TOGGLE_GUIDED_MODE_BROADCAST',
+        });
+      }
     }
   } catch (err) {
     console.error('[EchoBreaker Popup] 切换引导模式失败:', err);
