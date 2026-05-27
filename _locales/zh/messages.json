@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "回声破除者",
+    "description": "扩展名称"
+  },
+  "extShortName": {
+    "message": "回声破除",
+    "description": "扩展短名称"
+  },
+  "extDescription": {
+    "message": "认知抗阻伴学插件 - 在使用AI对话时保持独立思考。通过认知干预墙、延迟满足机制和苏格拉底式反问，帮助用户建立对AI回答的批判性思维，避免认知依赖。",
+    "description": "扩展描述"
+  }
+}

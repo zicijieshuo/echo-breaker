@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
   "name": "回声破除者",
-  "version": "3.0.0",
-  "description": "认知抗阻伴学插件 - 在使用AI时保持独立思考",
+  "short_name": "回声破除",
+  "version": "4.0.0",
+  "version_name": "4.0.0",
+  "description": "认知抗阻伴学插件 - 在使用AI对话时保持独立思考。通过认知干预墙、延迟满足机制和苏格拉底式反问，帮助用户建立对AI回答的批判性思维，避免认知依赖。",
+  "default_locale": "zh",
+  "author": "回声破除者开发团队",
+  "homepage_url": "https://github.com/zicijieshuo/echo-breaker",
+  "incognito": "not_allowed",
   "permissions": [
     "storage",
     "tabs",

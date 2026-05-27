@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回声破除者 - 隐私协议与数据合规文档</title>
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --accent: #16213e;
+      --highlight: #0f3460;
+      --text: #333;
+      --bg: #fafafa;
+      --border: #e0e0e0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2.5rem 3rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      border-bottom: 3px solid var(--highlight);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    h2 {
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
+      border-left: 4px solid var(--highlight);
+    }
+    h3 {
+      font-size: 1.1rem;
+      color: var(--highlight);
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    p { margin-bottom: 0.75rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.35rem; }
+    strong { color: var(--primary); }
+    code {
+      background: #f0f0f0;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    th {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: #f8f8f8; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: #999;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>回声破除者 隐私协议与数据合规文档</h1>
+    <div class="meta">
+      <strong>版本</strong>：v1.0<br>
+      <strong>生效日期</strong>：2026年5月22日<br>
+      <strong>适用范围</strong>：回声破除者浏览器插件（Edge / Chrome）
+    </div>
+
+    <hr>
+
+    <h2>一、数据收集原则</h2>
+
+    <h3>1.1 本地优先原则</h3>
+    <p>回声破除者遵循<strong>"本地优先"</strong>数据策略：</p>
+    <ul>
+      <li>所有行为统计数据默认仅存储在用户本地浏览器的 <code>chrome.storage.local</code> 中</li>
+      <li>不主动上传任何用户行为数据至云端服务器</li>
+      <li>仅在用户明确授权后，才会将特定数据加密传输至云端</li>
+    </ul>
+
+    <h3>1.2 最小必要原则</h3>
+    <p>仅收集实现产品核心功能所必需的最少数据：</p>
+    <ul>
+      <li>AI 网站使用时长（秒级精度）</li>
+      <li>连续提问轮数</li>
+      <li>复制粘贴操作次数</li>
+      <li>触发唤醒事件的时间戳</li>
+      <li>用户对唤醒提示的响应（忽略/暂停思考）</li>
+    </ul>
+
+    <h3>1.3 不收集的数据</h3>
+    <p>本插件<strong>明确不收集</strong>以下数据：</p>
+    <ul>
+      <li>用户在 AI 网站上输入的具体问题内容</li>
+      <li>AI 返回的具体回答内容</li>
+      <li>用户的浏览历史（非 AI 网站的访问记录）</li>
+      <li>用户的个人身份信息（姓名、身份证号等）</li>
+      <li>用户的账户凭证</li>
+    </ul>
+
+    <hr>
+
+    <h2>二、数据存储说明</h2>
+
+    <h3>2.1 本地存储结构</h3>
+    <table>
+      <thead><tr><th>存储键</th><th>数据内容</th><th>保留期限</th></tr></thead>
+      <tbody>
+        <tr><td><code>echo_breaker_usage</code></td><td>每日使用统计（时长、轮数、复制次数）</td><td>本地持久保存，用户可手动清除</td></tr>
+        <tr><td><code>echo_breaker_settings</code></td><td>用户偏好设置</td><td>本地持久保存</td></tr>
+        <tr><td><code>echo_breaker_prompts</code></td><td>苏格拉底文案库</td><td>本地持久保存，支持远程更新</td></tr>
+        <tr><td><code>echo_breaker_triggers</code></td><td>触发事件日志</td><td>本地持久保存</td></tr>
+        <tr><td><code>echo_breaker_thoughts_YYYY-MM-DD</code></td><td>思考日志（L3）</td><td>本地持久保存，用户可手动清除</td></tr>
+      </tbody>
+    </table>
+
+    <h3>2.2 云端存储（需用户授权）</h3>
+    <p>以下数据仅在用户<strong>独立勾选"同意上传训练数据"</strong>后才会传输：</p>
+    <table>
+      <thead><tr><th>数据类型</th><th>加密方式</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>思考日志</td><td>AES-256</td><td>思维偏差分析</td></tr>
+        <tr><td>靶场答案</td><td>AES-256</td><td>薄弱依据比对</td></tr>
+        <tr><td>匿名化使用统计</td><td>HTTPS</td><td>产品优化</td></tr>
+      </tbody>
+    </table>
+
+    <h3>2.3 数据脱敏规则</h3>
+    <ul>
+      <li>社群公开内容不包含可识别身份信息</li>
+      <li>用户名随机生成（如"思考的企鹅#3847"）</li>
+      <li>上传数据前自动移除所有 URL 中的查询参数和路径信息</li>
+      <li>时间戳仅保留日期级别，不包含精确到秒的时间</li>
+    </ul>
+
+    <hr>
+
+    <h2>三、数据传输安全</h2>
+
+    <h3>3.1 传输加密</h3>
+    <ul>
+      <li>全站 HTTPS 加密传输</li>
+      <li>敏感字段使用 AES-256 加密后再传输</li>
+      <li>API 通信使用 JWT Token 认证</li>
+    </ul>
+
+    <h3>3.2 传输内容限制</h3>
+    <ul>
+      <li>仅传输脱敏后的统计数据</li>
+      <li>不传输用户原始输入文本（除非用户主动在 L3 思考日志中输入并授权上传）</li>
+      <li>不传输 AI 网站的原始 HTML 内容</li>
+    </ul>
+
+    <hr>
+
+    <h2>四、用户权利</h2>
+
+    <h3>4.1 知情权</h3>
+    <ul>
+      <li>插件安装时展示完整隐私协议</li>
+      <li>首次使用时弹出数据收集说明</li>
+      <li>每次数据上传前确认提示</li>
+    </ul>
+
+    <h3>4.2 选择权</h3>
+    <ul>
+      <li>用户可随时关闭插件（全局开关）</li>
+      <li>用户可单独关闭数据上传功能</li>
+      <li>用户可选择干预强度（严格/建议/温和/轻干预）</li>
+    </ul>
+
+    <h3>4.3 访问权</h3>
+    <ul>
+      <li>用户可随时在 Popup 看板中查看自己的使用数据</li>
+      <li>用户可在设置页面导出全部本地数据</li>
+    </ul>
+
+    <h3>4.4 删除权</h3>
+    <ul>
+      <li>用户可手动清除全部本地存储数据</li>
+      <li>用户可申请删除云端数据（通过设置页面提交请求）</li>
+      <li>卸载插件时自动清除全部本地数据</li>
+    </ul>
+
+    <h3>4.5 撤回权</h3>
+    <ul>
+      <li>用户可随时撤回数据上传授权</li>
+      <li>撤回后立即停止数据上传，已上传数据将在30天内删除</li>
+    </ul>
+
+    <hr>
+
+    <h2>五、第三方服务</h2>
+
+    <h3>5.1 大模型 API 调用</h3>
+    <p>本插件在以下功能中调用大模型 API：</p>
+    <ul>
+      <li>L2 延迟满足层：生成引导式反问</li>
+      <li>L3 元认知外显层：思维偏差分析</li>
+      <li>L4 逆向重构层：薄弱依据判断</li>
+    </ul>
+    <p><strong>调用规则</strong>：</p>
+    <ul>
+      <li>仅传输用户主动输入的思考内容和靶场答案</li>
+      <li>不传输用户在 AI 网站上的原始对话</li>
+      <li>每用户每日 API 调用上限 50 次</li>
+      <li>API 供应商：DeepSeek / 智谱 GLM / 通义千问（按可用性自动切换）</li>
+    </ul>
+
+    <h3>5.2 第三方数据存储</h3>
+    <ul>
+      <li>云端数据存储于国内云服务商（阿里云/腾讯云）</li>
+      <li>遵守《中华人民共和国数据安全法》和《个人信息保护法》</li>
+    </ul>
+
+    <hr>
+
+    <h2>六、合规声明</h2>
+
+    <h3>6.1 法律合规</h3>
+    <ul>
+      <li>遵守《中华人民共和国网络安全法》</li>
+      <li>遵守《中华人民共和国数据安全法》</li>
+      <li>遵守《中华人民共和国个人信息保护法》</li>
+      <li>遵守《信息安全技术 个人信息安全规范》(GB/T 35273)</li>
+    </ul>
+
+    <h3>6.2 浏览器商店合规</h3>
+    <ul>
+      <li>遵守 Microsoft Edge Add-ons 开发者政策</li>
+      <li>遵守 Chrome Web Store 开发者计划政策</li>
+      <li>Manifest V3 合规：无远程代码执行、无持久化 Background Page</li>
+    </ul>
+
+    <h3>6.3 教育场景合规</h3>
+    <ul>
+      <li>面向高校使用时遵守教育部《高等学校信息公开办法》</li>
+      <li>B端产品不收集学生成绩等敏感教育数据</li>
+      <li>教师端仅提供聚合统计数据，不展示个体原始数据</li>
+    </ul>
+
+    <hr>
+
+    <h2>七、未成年人保护</h2>
+    <ul>
+      <li>本产品不面向14岁以下未成年人</li>
+      <li>如发现14岁以下用户使用，将通知监护人并限制功能</li>
+      <li>教育场景下，学生数据仅用于认知训练，不用于评价或排名</li>
+    </ul>
+
+    <hr>
+
+    <h2>八、协议更新</h2>
+    <ul>
+      <li>协议更新时将在插件内弹窗通知用户</li>
+      <li>重大变更需用户重新确认同意</li>
+      <li>历史版本协议在项目仓库中存档</li>
+    </ul>
+
+    <hr>
+
+    <h2>九、联系方式</h2>
+    <ul>
+      <li>项目仓库：<a href="https://github.com/zicijieshuo/echo-breaker" target="_blank">https://github.com/zicijieshuo/echo-breaker</a></li>
+      <li>数据保护相关问题：通过 GitHub Issues 提交</li>
+    </ul>
+
+    <div class="footer">本协议最终解释权归回声破除者开发团队所有。</div>
+  </div>
+</body>
+</html>
